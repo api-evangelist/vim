@@ -1,0 +1,174 @@
+aid: vim
+url: https://raw.githubusercontent.com/api-evangelist/vim/refs/heads/main/apis.yml
+name: Vim
+kind: company
+description: >-
+  Vim is a United States healthcare technology company (getvim.com) that operates a
+  clinical workflow and point-of-care integration platform connecting health plans,
+  provider organizations, and digital-health applications to physicians inside their
+  existing electronic health records. Through the Vim Canvas developer platform and the
+  VimOS.js JavaScript SDK, applications embed actionable clinical insights - diagnosis
+  gaps, risk, quality, and social determinants of health - directly into supported
+  ambulatory EHR workflows and can read and write EHR resources (Patient, Encounter,
+  Orders, Referral, Claim) at the point of care. Vim also exposes a REST API at
+  api.getvim.com/v1 for provisioning applications, organizations, invitations,
+  appointment lookups, and chart retrieval, authenticated with OAuth 2.0 client
+  credentials via an Auth0-backed authorization server (auth.getvim.com). Vim is HIPAA,
+  SOC 2, and HITRUST certified. The platform is proprietary REST and SDK based; it is not
+  an HL7 FHIR API and publishes no FHIR CapabilityStatement. The API is available only to
+  application servers hosted within the United States.
+accessModel:
+  pricing: enterprise
+  onboarding: partner
+  trial: false
+  try_now: false
+  public: false
+  label: Enterprise · Partner onboarding · US-only
+  confidence: medium
+  source:
+  - authentication
+  - documentation
+  generated: '2026-07-24'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Healthcare
+- United States
+- Clinical AI
+- EHR Integration
+- Point of Care
+- Interoperability
+- Value-Based Care
+- Care Gaps
+- OAuth
+created: '2026-07-24'
+modified: '2026-07-24'
+specificationVersion: '0.19'
+apis:
+- aid: vim:vim-canvas-sdk
+  name: Vim Canvas SDK (VimOS.js)
+  description: >-
+    The Vim Canvas developer platform and VimOS.js JavaScript SDK for embedding
+    applications at the point of care. Reads EHR state (Patient, Encounter, Orders,
+    Referral, Claim, plus problem/medication/allergy/lab/vitals lists) and writes back to
+    Encounter, Referral, and Order resources through Vim Connect's EHR connectivity layer.
+    Proprietary SDK surface - not FHIR.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  tags:
+  - EHR Integration
+  - SDK
+  - Point of Care
+  properties:
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: Documentation
+    url: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+  - type: GettingStarted
+    url: https://docs.getvim.com/vim-os-js/setting-up
+- aid: vim:vim-applications-api
+  name: Vim Applications & Organizations API
+  description: >-
+    REST endpoints for retrieving the organizations connected to an application and the
+    users within an organization application. OAuth 2.0 client-credentials authenticated.
+  humanURL: https://docs.getvim.com/api
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Applications
+  - Organizations
+  properties:
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+- aid: vim:vim-invitations-api
+  name: Vim Invitations API
+  description: >-
+    REST endpoint for inviting users to access applications on Vim. OAuth 2.0
+    client-credentials authenticated.
+  humanURL: https://docs.getvim.com/api
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Invitations
+  - User Management
+  properties:
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+- aid: vim:vim-appointments-api
+  name: Vim Appointments API
+  description: >-
+    REST endpoint returning future appointment data (a 10-day lookahead) for a Vim
+    organization. OAuth 2.0 client-credentials authenticated.
+  humanURL: https://docs.getvim.com/api
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Appointments
+  - Scheduling
+  properties:
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+- aid: vim:vim-chart-retrieval-api
+  name: Vim Chart Retrieval API
+  description: >-
+    REST endpoint for obtaining a download URL for a chart-retrieval request. OAuth 2.0
+    client-credentials authenticated.
+  humanURL: https://docs.getvim.com/api
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Chart Retrieval
+  - Clinical Data
+  properties:
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+- aid: vim:vim-data-source
+  name: Vim Data Source
+  description: >-
+    Ingestion surface for pushing patient-specific clinical insights and gaps (Diagnosis
+    Gaps, Risk, Quality, Social Determinants of Health) into Vim for surfacing at the
+    point of care, via either API or file-based connections. Requires a stable unique
+    patient ID and a stable unique identifier per insight/gap.
+  humanURL: https://data-docs.getvim.com/general-information.html
+  tags:
+  - Care Gaps
+  - Clinical Data
+  - Data Ingestion
+  properties:
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+common:
+- type: Website
+  url: https://getvim.com/
+- type: DeveloperPortal
+  url: https://docs.getvim.com/
+- type: Documentation
+  url: https://docs.getvim.com/
+- type: APIReference
+  url: https://docs.getvim.com/api
+- type: GettingStarted
+  url: https://docs.getvim.com/vim-os-js/setting-up
+- type: OpenIDConfiguration
+  url: well-known/vim-openid-configuration.json
+- type: OAuthMetadata
+  url: well-known/vim-oauth-authorization-server.json
+- type: GitHubOrganization
+  url: https://github.com/getvim
+- type: StatusPage
+  url: https://status.getvim.com
+- type: Blog
+  url: https://getvim.com/blog
+- type: Security
+  url: https://getvim.com/technology-security/
+- type: TermsOfService
+  url: https://getvim.com/legal/website-terms-of-use/
+- type: PrivacyPolicy
+  url: https://getvim.com/legal/privacy/
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

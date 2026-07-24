@@ -1,0 +1,154 @@
+aid: vim
+name: Vim
+review:
+  question: Does Vim expose a documented public API, and is it HL7 FHIR based?
+  answer: true
+  fhir: false
+  date: '2026-07-24'
+  reviewer: API Evangelist
+  homeMarket: United States
+findings:
+  summary: |
+    Vim (getvim.com) publishes a real, self-hosted developer portal - the Vim Canvas
+    developer platform at https://docs.getvim.com/ (HTTP 200) - centered on the VimOS.js
+    JavaScript SDK for embedding applications into ambulatory EHR workflows at the point
+    of care, plus a REST API reference at https://docs.getvim.com/api (HTTP 200). The REST
+    API is served from https://api.getvim.com/v1 (host live; unauthenticated
+    /v1/oauth/token returns HTTP 401). Authentication is OAuth 2.0 using the
+    client-credentials grant against an Auth0-backed authorization server at
+    auth.getvim.com; both the OpenID Connect discovery document and the OAuth 2.0
+    authorization-server metadata are served anonymously (HTTP 200) and were harvested
+    verbatim. Vim's surface is proprietary REST + SDK. It is NOT an HL7 FHIR API: no FHIR
+    base, no /metadata CapabilityStatement, and no SMART-on-FHIR .well-known/
+    smart-configuration are published (api.getvim.com/.well-known/smart-configuration and
+    /fhir/metadata both return HTTP 404). No downloadable OpenAPI/Swagger document is
+    exposed - the /api reference is rendered client-side by the vitepress-openapi plugin
+    from a spec bundled into the VitePress build, not published at a retrievable static
+    URL. Onboarding is partner/enterprise gated and US-only (application servers must be
+    hosted within the United States); there is no public self-serve signup or pricing
+    page.
+  developerPortal:
+    url: https://docs.getvim.com/
+    status: 200
+    confirmed: true
+  restApiReference:
+    url: https://docs.getvim.com/api
+    status: 200
+  apiHost:
+    baseURL: https://api.getvim.com/v1
+    tokenEndpointStatus: 401
+    note: Host is live; /v1/oauth/token returns 401 Unauthorized without credentials.
+  fhirCapabilityStatement:
+    present: false
+    note: Not a FHIR API. api.getvim.com/fhir/metadata -> 404; no FHIR base or CapabilityStatement documented.
+  smartOnFhir:
+    present: false
+    note: api.getvim.com/.well-known/smart-configuration -> 404; getvim.com/.well-known/smart-configuration -> 404.
+  authModel:
+    scheme: OAuth 2.0 client credentials
+    provider: Auth0 (auth.getvim.com)
+    issuer: https://auth.getvim.com/
+    tokenEndpoint: https://auth.getvim.com/oauth/token
+    grantTypesSupported:
+    - client_credentials
+    - authorization_code
+    - refresh_token
+    - urn:ietf:params:oauth:grant-type:device_code
+    - urn:ietf:params:oauth:grant-type:token-exchange
+    - urn:ietf:params:oauth:grant-type:jwt-bearer
+    scopesSupported:
+    - openid
+    - profile
+    - offline_access
+    - email
+    - phone
+    - address
+    note: SMART-on-FHIR scopes (patient/*.read, system/*.rw) are NOT used - Vim is not FHIR based.
+  downloadableSpecs:
+    openapi: false
+    note: /api reference is rendered by the vitepress-openapi plugin from a spec bundled into the VitePress build; no static OpenAPI/Swagger URL is exposed.
+  standardsConformance:
+    usCore: false
+    daVinci: false
+    carin: false
+    fhir: false
+    note: Proprietary REST + JavaScript SDK. Compliance posture is HIPAA, SOC 2, and HITRUST certified.
+  accessPosture:
+    gated: true
+    selfServe: false
+    usOnly: true
+    note: Partner/enterprise onboarding; the API is available only to application servers hosted within the United States.
+  specsSavedVerbatim: 2
+  transports:
+  - protocol: REST
+    scheme: https
+    baseURL: https://api.getvim.com/v1
+    documented: true
+  - protocol: SDK
+    scheme: https
+    note: VimOS.js JavaScript SDK (Vim Connect) for in-EHR read/write at the point of care.
+    documented: true
+  - protocol: OAuth2
+    scheme: https
+    baseURL: https://auth.getvim.com
+    note: Auth0-backed authorization server; client-credentials grant. OIDC + OAuth AS metadata harvested verbatim.
+    documented: true
+  - protocol: FHIR
+    scheme: https
+    documented: false
+    note: No FHIR base, CapabilityStatement, or SMART-on-FHIR configuration is published.
+  - protocol: WebSocket
+    scheme: wss
+    documented: false
+    note: No WebSocket endpoint is documented.
+  restEndpointsConfirmed:
+  - POST https://api.getvim.com/v1/oauth/token
+  - POST https://api.getvim.com/v1/invitations
+  - GET  https://api.getvim.com/v1/applications/{applicationId}/organizations
+  - GET  https://api.getvim.com/v1/applications/{applicationId}/organizations/{organizationId}/users
+  - GET  https://api.getvim.com/v1/appointments/{vimOrganizationId}
+  - GET  https://api.getvim.com/v1/chart-retrieval/download-url/{requestId}
+sources:
+- url: https://docs.getvim.com/
+  type: DeveloperPortal
+  status: 200
+  note: Vim Canvas developer platform - Build / Integrate / Test / Deliver; VimOS.js SDK + VimOS API + sandbox EHR simulator.
+- url: https://docs.getvim.com/api
+  type: APIReference
+  status: 200
+  note: REST API reference (base https://api.getvim.com/v1); OAuth 2.0 client credentials; endpoints for invitations, applications/organizations, appointments, chart retrieval.
+- url: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+  type: Documentation
+  status: 200
+  note: VimOS.js EHR connectivity - readable (Patient, Encounter, Orders, Referral, Claim) and writable (Encounter, Referral, Order) EHR state.
+- url: https://data-docs.getvim.com/general-information.html
+  type: Documentation
+  status: 200
+  note: Vim Data Source - clinical insight/gap ingestion (Diagnosis Gaps, Risk, Quality, SDoH) via API or file-based connections.
+- url: https://auth.getvim.com/.well-known/openid-configuration
+  type: OpenIDConfiguration
+  status: 200
+  note: Harvested verbatim to well-known/vim-openid-configuration.json - Auth0 issuer, client_credentials supported.
+- url: https://auth.getvim.com/.well-known/oauth-authorization-server
+  type: OAuthMetadata
+  status: 200
+  note: Harvested verbatim to well-known/vim-oauth-authorization-server.json.
+actions:
+  fhirMetadataSaved: false
+  wellKnownSaved: true
+  wellKnownPaths:
+  - well-known/vim-openid-configuration.json
+  - well-known/vim-oauth-authorization-server.json
+  openapiSaved: false
+  apisYmlUpdated: true
+  reason: |
+    Vim is a proprietary REST + JavaScript SDK healthcare integration platform, not an HL7
+    FHIR API, so no FHIR CapabilityStatement or SMART-on-FHIR configuration exists to
+    capture. No downloadable OpenAPI is published (the reference is rendered client-side).
+    The two anonymously-served OAuth/OIDC discovery documents were harvested verbatim into
+    well-known/. apis.yml catalogs the documented product surface: the Vim Canvas SDK, the
+    REST API segments (Applications/Organizations, Invitations, Appointments, Chart
+    Retrieval), and the Vim Data Source.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
