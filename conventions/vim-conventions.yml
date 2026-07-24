@@ -1,0 +1,57 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/vim-data-source-openapi-original.json
+# Cross-cutting request/response semantics for the Vim Data Source API.
+# Derived from the OpenAPI; the Data Source is customer-hosted (each customer
+# exposes the endpoints at their own host per the server template
+# https://{environment}-{customerName}.com).
+authentication:
+  style: oauth2-client-credentials
+  token_endpoint: /oauth/token
+  grant_type: client_credentials
+  request_fields: [client_id, client_secret, grant_type]
+  token_type: Bearer
+  token_format: JWT
+  token_ttl_seconds: 3600
+  header: "Authorization: Bearer <access_token>"
+  note: All resource operations require the bearer token issued by POST /oauth/token.
+  see: authentication/vim-authentication.yml
+content_type:
+  request: application/json
+  response: application/json
+idempotency:
+  supported: false
+  note: >-
+    No idempotency-key header or parameter is documented in the OpenAPI. Write
+    operations (patient/identify, insights/feedback) are keyed by stable
+    patient_id and per-gap/insight id supplied in the payload rather than a
+    request idempotency key.
+pagination:
+  supported: false
+  note: >-
+    All endpoints operate on a single patient per request; insights are returned
+    as an inline array with no cursor/offset paging.
+versioning:
+  scheme: none-in-path
+  note: >-
+    The Data Source REST paths carry no version segment. The companion VimOS.js
+    browser SDK is versioned with semver (see changelog/packages); docs are
+    published per major (1.x.x).
+error_handling:
+  envelope: { code: string, reason: string }
+  media_type: application/json
+  rfc9457: false
+  see: errors/vim-problem-types.yml
+request_tracing:
+  request_id_header: null
+  note: No request-id/correlation header is documented.
+rate_limiting:
+  documented: false
+  note: No rate-limit headers or quotas are documented in the OpenAPI.
+identifiers:
+  patient_id: Stable unique patient identifier returned by POST /patient/identify.
+  gap_id: A unique identifier per gap and per patient.
+  insight_id: A unique identifier per insight and per patient.
+  note: >-
+    Vim requires a stable unique patient ID and a stable unique identifier per
+    insight/gap across submissions.

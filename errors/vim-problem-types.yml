@@ -1,0 +1,62 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/vim-data-source-openapi-original.json
+# Vim Data Source API does NOT use RFC 9457 application/problem+json.
+# Errors are returned as a custom JSON envelope: { code: string, reason: string }.
+format: custom
+error_envelope:
+  media_type: application/json
+  fields:
+    - name: code
+      type: string
+      description: Error code indicating the type of error (e.g., SERVER_ERROR).
+    - name: reason
+      type: string
+      description: Detailed human-readable explanation of the error.
+  example:
+    code: SERVER_ERROR
+    reason: An unexpected error occurred while processing the request
+problems:
+  - status: 400
+    title: Invalid input
+    description: The request body or parameters failed validation.
+    schema: ErrorResponse
+    source_operations:
+      - openapi/vim-data-source-openapi-original.json#post-oauth-token
+      - openapi/vim-data-source-openapi-original.json#post-patient-identify
+      - openapi/vim-data-source-openapi-original.json#post-insights-fetch
+      - openapi/vim-data-source-openapi-original.json#post-insights-feedback
+  - status: 401
+    title: Unauthorized
+    description: Missing, invalid, or expired bearer token. Obtain a token from POST /oauth/token.
+    schema: ErrorResponse
+    source_operations:
+      - openapi/vim-data-source-openapi-original.json#post-oauth-token
+      - openapi/vim-data-source-openapi-original.json#post-patient-identify
+      - openapi/vim-data-source-openapi-original.json#post-insights-fetch
+      - openapi/vim-data-source-openapi-original.json#post-insights-feedback
+  - status: 403
+    title: Forbidden
+    description: The authenticated client is not permitted to access the requested patient or resource.
+    schema: ErrorResponse
+    source_operations:
+      - openapi/vim-data-source-openapi-original.json#post-patient-identify
+      - openapi/vim-data-source-openapi-original.json#post-insights-fetch
+      - openapi/vim-data-source-openapi-original.json#post-insights-feedback
+  - status: 404
+    title: Patient/path not found
+    description: The patient could not be identified, or the requested path does not exist.
+    schema: ErrorResponse
+    source_operations:
+      - openapi/vim-data-source-openapi-original.json#post-patient-identify
+      - openapi/vim-data-source-openapi-original.json#post-insights-fetch
+      - openapi/vim-data-source-openapi-original.json#post-insights-feedback
+  - status: 500
+    title: Internal server error
+    description: An unexpected error occurred while processing the request.
+    schema: ErrorResponse
+    source_operations:
+      - openapi/vim-data-source-openapi-original.json#post-oauth-token
+      - openapi/vim-data-source-openapi-original.json#post-patient-identify
+      - openapi/vim-data-source-openapi-original.json#post-insights-fetch
+      - openapi/vim-data-source-openapi-original.json#post-insights-feedback

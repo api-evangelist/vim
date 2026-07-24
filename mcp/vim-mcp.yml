@@ -1,0 +1,26 @@
+generated: '2026-07-24'
+method: derived
+status: candidate
+source: openapi/vim-data-source-openapi-original.json
+# No official hosted Vim (getvim.com healthcare) MCP server was found (searched
+# docs, npm @modelcontextprotocol, MCP registries — matches were the unrelated
+# Vim/Neovim editor). This is a DERIVED candidate tool list, one tool per
+# OpenAPI operation, so agents have a starting contract. inputSchema for each
+# tool is the backing operation's requestBody/parameters (see tool-crosswalk).
+server:
+  name: vim-data-source
+  transport: http
+  url: null
+tools:
+  - name: get_access_token
+    description: Authenticate with client credentials and retrieve a bearer access token.
+    source_operation: openapi/vim-data-source-openapi-original.json#post-oauth-token
+  - name: identify_patient
+    description: Identify an eligible patient from demographic details and return a stable patient_id.
+    source_operation: openapi/vim-data-source-openapi-original.json#post-patient-identify
+  - name: fetch_patient_insights
+    description: Fetch patient care insights (diagnosis gaps, risk, quality, SDOH) for a patient_id.
+    source_operation: openapi/vim-data-source-openapi-original.json#post-insights-fetch
+  - name: send_insight_feedback
+    description: Send feedback (e.g. AGREE, DISMISS) about a diagnosis gap or insight.
+    source_operation: openapi/vim-data-source-openapi-original.json#post-insights-feedback

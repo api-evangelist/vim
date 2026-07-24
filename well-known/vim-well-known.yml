@@ -1,0 +1,31 @@
+generated: '2026-07-24'
+method: searched
+# Vim's authorization server is an Auth0 tenant at auth.getvim.com; its OIDC and
+# OAuth AS discovery documents are captured verbatim. No security.txt or
+# api-catalog is published on the API/website hosts.
+hosts:
+  - host: https://auth.getvim.com
+    documents:
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: vim-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: vim-oauth-authorization-server.json
+      - path: /.well-known/jwks.json
+        status: 200
+        note: Referenced as jwks_uri in the discovery documents (not saved verbatim).
+  - host: https://getvim.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+  - host: https://api.getvim.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404

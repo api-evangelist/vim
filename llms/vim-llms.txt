@@ -1,0 +1,36 @@
+# Vim (getvim.com)
+
+> Vim is a US healthcare technology company operating a clinical workflow and point-of-care integration platform that connects health plans, provider organizations, and digital-health applications to physicians inside their existing EHRs. Applications embed actionable clinical insights — diagnosis gaps, risk, quality, and social determinants of health — directly into ambulatory EHR workflows via the Vim Canvas platform and VimOS.js SDK, and can read/write EHR resources at the point of care. Vim is HIPAA, SOC 2 Type II, and HITRUST certified. Not a FHIR API.
+
+## APIs
+- [Vim Canvas SDK (VimOS.js)](https://docs.getvim.com/vim-os-js/setting-up): JavaScript SDK to embed apps at the point of care; reads/writes EHR state.
+- [Vim Data Source API](https://data-docs.getvim.com/api-integration.html): OAuth2 client-credentials REST API to identify patients and push/fetch care insights and gaps.
+- [Vim Applications & Organizations API](https://docs.getvim.com/api): REST endpoints for organizations and users connected to an application.
+- [Vim Invitations API](https://docs.getvim.com/api): Invite users to access applications on Vim.
+- [Vim Appointments API](https://docs.getvim.com/api): Future appointment data (10-day lookahead) for an organization.
+- [Vim Chart Retrieval API](https://docs.getvim.com/api): Obtain a download URL for a chart-retrieval request.
+
+## Specs
+- [Data Source OpenAPI (3.0.0)](https://data-docs.getvim.com/openapi.json): 4 operations — token, patient identify, insights fetch, insights feedback.
+
+## Docs
+- [Developer Platform](https://docs.getvim.com/platform/platform)
+- [VimOS.js Getting Started](https://docs.getvim.com/vim-os-js/setting-up)
+- [EHR Connectivity](https://docs.getvim.com/vim-os-js/vim-ehr-connectivity)
+- [Data Source Integration Docs](https://data-docs.getvim.com/general-information.html)
+- [API Reference](https://docs.getvim.com/api)
+
+## Auth
+- OAuth 2.0 client-credentials via Auth0 tenant auth.getvim.com; bearer JWT.
+- OIDC discovery: https://auth.getvim.com/.well-known/openid-configuration
+
+## Security & Compliance
+- HIPAA, SOC 2 Type II, HITRUST CSF — https://getvim.com/technology-security/
+
+## Packages
+- [vim-os-js-browser (npm)](https://www.npmjs.com/package/vim-os-js-browser): VimOS.js browser SDK.
+
+## Operations
+- [Status](https://status.getvim.com)
+- [Blog](https://getvim.com/blog)
+- [GitHub](https://github.com/getvim)

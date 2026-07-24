@@ -1,0 +1,18 @@
+generated: '2026-07-24'
+method: searched
+source: https://getvim.com/technology-security/
+url: https://compliance-self-service.getvim.com
+certifications:
+  - HITRUST CSF
+  - SOC 2 Type II
+  - HIPAA
+security_practices:
+  - Internal and external penetration testing and security code reviews.
+  - Vulnerability management program with automated and manual detection.
+  - Encryption (AES-256, SHA-512, RSA-2048); hosted on AWS.
+evidence:
+  - source: https://getvim.com/technology-security/
+    keywords: [hitrust csf, soc 2 type ii, hipaa, penetration testing]
+  - source: https://compliance-self-service.getvim.com
+    kind: compliance-document-self-service-portal
+    note: Gated portal (HTTP 403 anonymous) for requesting compliance documents.

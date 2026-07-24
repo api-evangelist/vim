@@ -1,0 +1,22 @@
+generated: '2026-07-24'
+method: searched
+source: https://www.npmjs.com/package/vim-os-js-browser
+packages:
+  - language: javascript
+    registry: npm
+    name: vim-os-js-browser
+    version: 2.0.20
+    url: https://www.npmjs.com/package/vim-os-js-browser
+    install: npm install vim-os-js-browser
+    official: true
+    description: >-
+      VimOS.js browser SDK to embed applications into EHR workflows via the Vim
+      Canvas platform. Vim recommends loading it directly from
+      connect.getvim.com rather than bundling.
+    license: Vim
+    homepage: https://docs.getvim.com/vim-os-js/setting-up
+notes: >-
+  Vim publishes one first-party client library, the VimOS.js browser SDK. The
+  getvim GitHub org hosts demo/starter apps (vim-canvas-demo-app,
+  vim-base-app-template, vim-canvas-demo-angular, vim-ai-scribe-demo-app) that
+  consume it, not additional published SDKs.

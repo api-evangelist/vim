@@ -142,7 +142,61 @@ apis:
   properties:
   - type: Documentation
     url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: OpenAPI
+    url: openapi/vim-data-source-openapi-original.json
+  - type: MCPServer
+    url: mcp/vim-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+  - type: Overlay
+    url: overlays/vim-data-source-overlay.yaml
 common:
+- type: OpenAPI
+  url: openapi/vim-data-source-openapi-original.json
+- type: MCPServer
+  url: mcp/vim-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/vim-tool-crosswalk.yml
+- type: Packages
+  url: packages/vim-packages.yml
+- type: SDKs
+  url: packages/vim-packages.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: ErrorCatalog
+  url: errors/vim-problem-types.yml
+- type: Conventions
+  url: conventions/vim-conventions.yml
+- type: DataModel
+  url: data-model/vim-data-model.yml
+- type: Lifecycle
+  url: lifecycle/vim-lifecycle.yml
+- type: Conformance
+  url: conformance/vim-conformance.yml
+- type: Compliance
+  url: https://getvim.com/technology-security/
+- type: TrustCenter
+  url: https://compliance-self-service.getvim.com
+- type: WellKnown
+  url: well-known/vim-well-known.yml
+- type: LLMsTxt
+  url: llms/vim-llms.txt
+- type: Overlay
+  url: overlays/vim-data-source-overlay.yaml
+- type: DomainSecurity
+  url: security/vim-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/vim-agentic-access.yml
+- type: OAuthScopes
+  url: scopes/vim-scopes.yml
+- type: Authentication
+  url: authentication/vim-authentication.yml
 - type: Website
   url: https://getvim.com/
 - type: DeveloperPortal

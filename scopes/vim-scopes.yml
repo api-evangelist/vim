@@ -1,0 +1,38 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/vim-data-source-openapi-original.json
+docs: https://auth.getvim.com/.well-known/openid-configuration
+# The Data Source OpenAPI declares an oauth2 scheme with no populated scopes;
+# real client-credentials auth issues a bearer JWT (audience-scoped, not
+# scope-scoped). The Auth0 authorization server backing the Vim REST API
+# (auth.getvim.com) advertises the standard OIDC scopes below.
+schemes:
+  - name: service
+    type: oauth2
+    source: openapi/vim-data-source-openapi-original.json
+    flows:
+      - flow: implicit
+  - name: auth.getvim.com (Auth0 tenant)
+    type: oauth2
+    source: well-known/vim-openid-configuration.json
+    flows:
+      - flow: clientCredentials
+        tokenUrl: https://auth.getvim.com/oauth/token
+scopes:
+  - scope: openid
+    description: OIDC — issue an ID token.
+    sources: [well-known/vim-openid-configuration.json]
+  - scope: profile
+    description: Basic profile claims.
+    sources: [well-known/vim-openid-configuration.json]
+  - scope: email
+    description: Email claim.
+    sources: [well-known/vim-openid-configuration.json]
+  - scope: offline_access
+    description: Issue a refresh token.
+    sources: [well-known/vim-openid-configuration.json]
+notes: >-
+  scopes_supported at auth.getvim.com also includes name, given_name,
+  family_name, nickname, email_verified, picture, created_at, identities, phone,
+  address. Machine-to-machine Data Source access uses the client_credentials
+  grant with an audience rather than granular scopes.

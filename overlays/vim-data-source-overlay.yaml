@@ -1,0 +1,22 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Vim Data Source API Integration
+  version: 1.0.0
+extends: openapi/vim-data-source-openapi-original.json
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: vim
+      x-apievangelist-surface: data-source
+      x-apievangelist-auth: oauth2-client-credentials (bearer JWT via POST /oauth/token)
+      x-apievangelist-error-envelope: "{ code, reason } (not RFC 9457)"
+      x-apievangelist-fhir: false
+  - target: $.paths['/patient/identify'].post
+    update:
+      x-apievangelist-consequence: reads PHI; returns stable patient_id + eligibility
+  - target: $.paths['/insights/feedback'].post
+    update:
+      x-apievangelist-consequence: write; records clinician action (AGREE/DISMISS) on a gap/insight
+notes: >-
+  Non-destructive overlay capturing API Evangelist annotations. The original
+  spec at openapi/vim-data-source-openapi-original.json is never mutated.

@@ -1,0 +1,1791 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Vim Data Source API Integration",
+    "description": "API for managing patient insights",
+    "version": ""
+  },
+  "servers": [
+    {
+      "url": "https://{environment}-{customerName}.com",
+      "description": "Customer API server URL",
+      "variables": {
+        "environment": {
+          "default": "api",
+          "description": "Environment (e.g., api, staging, dev)"
+        },
+        "customerName": {
+          "default": "example",
+          "description": "Customer name"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Access Token Retrieval",
+      "description": "Obtaining a Bearer service token to make API requests"
+    },
+    {
+      "name": "Patient Identification",
+      "description": "Identify the patient based on personal information"
+    },
+    {
+      "name": "Get Patient Care Insights",
+      "description": "Retrieving patient care insights such as diagnosis gaps and care insights"
+    },
+    {
+      "name": "Patient Care Insights Feedback",
+      "description": "Sending feedback about the care insights"
+    }
+  ],
+  "paths": {
+    "/oauth/token": {
+      "post": {
+        "operationId": "post-oauth-token",
+        "tags": [
+          "Access Token Retrieval"
+        ],
+        "summary": "Authenticate and Retrieve an Access Token",
+        "description": "This endpoint authenticates clients and provides access tokens for subsequent API calls.",
+        "parameters": [
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthTokenRequest"
+              },
+              "example": {
+                "client_id": "example-client-id",
+                "client_secret": "example-client-secret",
+                "grant_type": "client_credentials"
+              }
+            }
+          },
+          "description": "Authentication request body containing client credentials"
+        },
+        "security": [
+        ],
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "INVALID_INPUT",
+                  "reason": "The request is missing required parameters or contained invalid values"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "reason": "The provided authentication credentials are invalid"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "SERVER_ERROR",
+                  "reason": "An unexpected error occurred while processing the request"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/patient/identify": {
+      "post": {
+        "operationId": "post-patient-identify",
+        "tags": [
+          "Patient Identification"
+        ],
+        "summary": "Identify an Eligible Patient",
+        "description": "Identifies a patient that is eligible to the service by their personal details information.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientDetails"
+              },
+              "example": {
+                "first_name": "John",
+                "last_name": "Doe",
+                "dob": "1990-07-19",
+                "member_id": "123445455",
+                "ehr_id": "a1b2c3d4",
+                "zip_code": "90210",
+                "insurer": "United Health Care",
+                "state": "FL"
+              }
+            }
+          },
+          "description": "Patient identification details"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Authentication Bearer token to allow request to be processed"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "description": "Media type of the body of the request"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully identified the patient",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentifyPatientResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "INVALID_INPUT",
+                  "reason": "The request is missing required parameters or contained invalid values"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "reason": "The provided authentication credentials are invalid"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "reason": "You do not have permission to access this resource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Patient/path not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "PATIENT_NOT_FOUND",
+                  "reason": "No patient matching the provided criteria was found in the system"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "SERVER_ERROR",
+                  "reason": "An unexpected error occurred while processing the request"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/insights/fetch": {
+      "post": {
+        "operationId": "post-insights-fetch",
+        "tags": [
+          "Get Patient Care Insights"
+        ],
+        "summary": "Fetching Patient Care Insights ",
+        "description": "Retrieving patient care insights for the patient identified in the previous step",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Patient"
+              },
+              "example": {
+                "patient_id": "d4fon0UkvtdfNBW1JfD5"
+              }
+            }
+          },
+          "description": "Patient identifier"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Authentication Bearer token to allow request to be processed"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "description": "Media type of the body of the request"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched insights for the patient",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      { "$ref": "#/components/schemas/DiagnosisGap" },
+                      { "$ref": "#/components/schemas/Insight" }
+                    ],
+                    "discriminator": {
+                      "propertyName": "data_type",
+                      "mapping": {
+                        "diagnosis_gap": "#/components/schemas/DiagnosisGap",
+                        "insight": "#/components/schemas/Insight"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "withGaps": {
+                    "summary": "Response with gaps",
+                    "x-collapsed": true,
+                    "value": [
+                      {
+                        "data_type": "diagnosis_gap",
+                        "id": "gap1",
+                        "system": "ICD",
+                        "hcc_model_version": "CMS-HCC V28",
+                        "medical_codes": [
+                          {
+                            "system": "ICD",
+                            "code": "E11.9",
+                            "description": "Type 2 diabetes mellitus without complications"
+                          }
+                        ],
+                        "type": "KNOWN",
+                        "status": "OPEN",
+                        "source": "2023 claims",
+                        "raf_score": 0.368,
+                        "last_recorded": {
+                          "date": "2023-09-15",
+                          "provider": {
+                            "npi": "1234567890",
+                            "name": "Jane Smith"
+                          }
+                        },
+                        "notes": "Example diagnosis gap",
+                        "custom_fields": [
+                          {
+                            "title": "Risk Priority",
+                            "level": "gap",
+                            "type": "string",
+                            "value": "High"
+                          }
+                        ]
+                      },
+                      {
+                        "data_type": "diagnosis_gap",
+                        "id": "gap2",
+                        "system": "HCC",
+                        "hcc_model_version": "CMS-HCC V28",
+                        "hcc_code": 19,
+                        "hcc_description": "Diabetes without Complication",
+                        "medical_codes": [
+                          {
+                            "system": "ICD",
+                            "code": "E11.9",
+                            "description": "Type 2 diabetes mellitus without complications"
+                          }
+                        ],
+                        "type": "KNOWN",
+                        "status": "OPEN",
+                        "source": "2023 claims",
+                        "raf_score": 0.104,
+                        "last_recorded": {
+                          "date": "2023-10-20",
+                          "provider": {
+                            "npi": "0987654321",
+                            "name": "John Doe"
+                          }
+                        },
+                        "notes": "Example HCC diagnosis gap"
+                      },
+                      {
+                        "data_type": "insight",
+                        "id": "insight1",
+                        "code": "CBP",
+                        "title": "Blood Pressure Check",
+                        "category": "QUALITY",
+                        "description": "Annual blood pressure check",
+                        "type": "HEDIS",
+                        "medical_codes": [
+                          {
+                            "system": "CPT",
+                            "code": "3074F",
+                            "description": "Most recent systolic BP less than 130 mm Hg"
+                          }
+                        ],
+                        "status": "OPEN",
+                        "source": "Quality measure",
+                        "last_recorded": {
+                          "date": "2023-09-15",
+                          "provider": {
+                            "npi": "1234567890",
+                            "name": "Jane Smith"
+                          }
+                        },
+                        "notes": "Annual blood pressure check required",
+                        "custom_fields": [
+                          {
+                            "title": "Patient Risk Score",
+                            "level": "patient",
+                            "type": "decimal",
+                            "value": 3.2
+                          }
+                        ],
+                        "document": {
+                          "doc_file_path": "gs://medical-records/patient123_bp_history.pdf",
+                          "doc_coordinates": [1, 8.5, 11, 2.1, 3.5, 6.2, 3.5, 6.2, 4.8, 2.1, 4.8]
+                        }
+                      }
+                    ]
+                  },
+                  "noGaps": {
+                    "summary": "Response with no gaps",
+                    "x-collapsed": true,
+                    "value": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "INVALID_INPUT",
+                  "reason": "The request is missing required parameters or contained invalid values"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "reason": "The provided authentication credentials are invalid"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "reason": "You do not have permission to access this resource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Patient/path not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "PATIENT_NOT_FOUND",
+                  "reason": "No patient matching the provided identifier was found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "SERVER_ERROR",
+                  "reason": "An unexpected error occurred while processing the request"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/insights/feedback": {
+      "post": {
+        "operationId": "post-insights-feedback",
+        "tags": [
+          "Patient Care Insights Feedback"
+        ],
+        "summary": "Sending feedback about the insight",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/DiagnosisGapFeedback" },
+                  { "$ref": "#/components/schemas/InsightFeedback" }
+                ],
+                "discriminator": {
+                  "propertyName": "data_type",
+                  "mapping": {
+                    "diagnosis_gap": "#/components/schemas/DiagnosisGapFeedback",
+                    "insight": "#/components/schemas/InsightFeedback"
+                  }
+                }
+              },
+              "examples": {
+                "diagnosisGap": {
+                  "summary": "Diagnosis Gap Feedback",
+                  "x-collapsed": true,
+                  "value": {
+                    "data_type": "diagnosis_gap",
+                    "patient_id": "d4fon0UkvtdfNBW1JfD5",
+                    "id": "Ae3uywUB0YwdwxxdA4M5",
+                    "action": {
+                      "date": "2024-01-20",
+                      "type": "AGREE",
+                      "reason": "Confirmed diagnosis",
+                      "notes": "Patient records show this diagnosis"
+                    },
+                    "organization": {
+                      "name": "Test Medical Group",
+                      "vim_organization_key": "test-medical-key-12345"
+                    },
+                    "system": "HCC",
+                    "type": "KNOWN",
+                    "status": "OPEN",
+                    "medical_codes": [
+                      {
+                        "system": "ICD",
+                        "code": "F32.9",
+                        "description": "Major depressive disorder, single episode, unspecified"
+                      }
+                    ]
+                  }
+                },
+                "insight": {
+                  "summary": "Insight Feedback",
+                  "x-collapsed": true,
+                  "value": {
+                    "data_type": "insight",
+                    "patient_id": "d4fon0UkvtdfNBW1JfD5",
+                    "id": "Bf4vywUB0YwdwxxdB5N6",
+                    "action": {
+                      "date": "2024-01-20",
+                      "type": "AGREE",
+                      "reason": "Procedure completed",
+                      "notes": "Screening was completed"
+                    },
+                    "organization": {
+                      "name": "Test Medical Group",
+                      "vim_organization_key": "test-medical-key-12345"
+                    },
+                    "title": "Blood Pressure Check",
+                    "code": "CBP",
+                    "category": "QUALITY",
+                    "description": "Annual blood pressure check",
+                    "type": "HEDIS",
+                    "status": "OPEN",
+                    "medical_codes": [
+                      {
+                        "system": "CPT",
+                        "code": "3074F",
+                        "description": "Most recent systolic BP less than 130 mm Hg"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "Feedback request details - schema varies based on data_type"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Authentication Bearer token to allow request to be processed"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "description": "Media type of the body of the request"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feedback updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Success Response",
+                    "x-collapsed": true,
+                    "value": {
+                      "update_status": "SUCCESS"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "INVALID_INPUT",
+                  "reason": "The request is missing required parameters or contained invalid values"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "reason": "The provided authentication credentials are invalid"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "reason": "You do not have permission to access this resource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Patient/path not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "PATIENT_NOT_FOUND",
+                  "reason": "No patient matching the provided identifier was found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "SERVER_ERROR",
+                  "reason": "An unexpected error occurred while processing the request"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthTokenRequest": {
+        "type": "object",
+        "required": [
+          "client_id",
+          "client_secret",
+          "grant_type"
+        ],
+        "description": "Authentication request",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "description": "Unique defined ID for the client"
+          },
+          "client_secret": {
+            "type": "string",
+            "description": "Provided client secret information"
+          },
+          "grant_type": {
+            "type": "string",
+            "description": "OAuth 2.0 grant type, must be set to client_credentials",
+            "default": "client_credentials"
+          }
+        },
+        "example": {
+          "client_id": "example-client-id",
+          "client_secret": "example-client-secret",
+          "grant_type": "client_credentials"
+        }
+      },
+      "AuthTokenResponse": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Bearer token for authenticating subsequent requests"
+          },
+          "token_type": {
+            "type": "string",
+            "default": "Bearer",
+            "description": "Type of the token issued"
+          },
+          "expires_in": {
+            "type": "integer",
+            "default": 3600,
+            "description": "Token expiry details in seconds"
+          }
+        }
+      },
+      "PatientDetails": {
+        "type": "object",
+        "required": [
+          "first_name",
+          "last_name",
+          "dob"
+        ],
+        "description": "Patient identification details",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "Patient's first name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Patient's last name"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "description": "Patient's date of birth in yyyy-mm-dd format"
+          },
+          "member_id": {
+            "type": "string",
+            "description": "[CONDITIONAL] Patient's member ID - Requirements based on the customer's patient matching mechanism"
+          },
+          "ehr_id": {
+            "type": "string",
+            "description": "[CONDITIONAL] Patient's EHR ID - Requirements based on the customer's patient matching mechanism"
+          },
+          "zip_code": {
+            "type": "string",
+            "description": "[CONDITIONAL] Patient's ZIP code - Requirements based on the customer's patient matching mechanism"
+          },
+          "insurer": {
+            "type": "string",
+            "description": "Patient's insurance provider"
+          },
+          "state": {
+            "type": "string",
+            "description": "Patient's state of residence"
+          }
+        },
+        "example": {
+          "first_name": "John",
+          "last_name": "Doe",
+          "dob": "1990-07-19",
+          "member_id": "123445455",
+          "ehr_id": "a1b2c3d4",
+          "zip_code": "90210",
+          "insurer": "United Health Care",
+          "state": "FL"
+        }
+      },
+      "IdentifyPatientResponse": {
+        "type": "object",
+        "required": [
+          "is_eligible",
+          "patient_id"
+        ],
+        "description": "Response from patient identification",
+        "properties": {
+          "is_eligible": {
+            "type": "boolean",
+            "description": "Indicates if the patient is eligible for the service"
+          },
+          "patient_id": {
+            "type": "string",
+            "description": "Unique identifier for the patient"
+          }
+        },
+        "example": {
+          "is_eligible": true,
+          "patient_id": "d4fon0UkvtdfNBW1JfD5"
+        }
+      },
+      "Patient": {
+        "type": "object",
+        "required": [
+          "patient_id"
+        ],
+        "description": "Patient identifier",
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "description": "Unique patient identifier"
+          }
+        },
+        "example": {
+          "patient_id": "d4fon0UkvtdfNBW1JfD5"
+        }
+      },
+      "GapDetails": {
+        "type": "object",
+        "required": [
+          "gap_id",
+          "gap_status"
+        ],
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "description": "A unique identifier per gap and per patient"
+          },
+          "gap_status": {
+            "type": "string",
+            "description": "Gap Status. Only open gaps are displayed in the UI.",
+            "enum": ["Open", "Closed"]
+          },
+          "last_recorded_dos": {
+            "type": "string",
+            "format": "date",
+            "description": "Most recent date of a relevant service",
+            "example": "1990-07-19"
+          },
+          "last_recorded_npi": {
+            "type": "integer",
+            "description": "NPI of the most recent coding provider",
+            "example": 123456789
+          },
+          "last_recorded_provider_name": {
+            "type": "string",
+            "description": "Name of the most recent coding provider",
+            "example": "John Doe"
+          },
+          "source": {
+            "type": "string",
+            "description": "Gap source",
+            "example": "2021 claims"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional information related to the gap",
+            "example": "It's recommended to use category II codes claims for HEDIS"
+          }
+        }
+      },
+      "Insights": {
+        "type": "array",
+        "items": {
+          "allOf": [
+            { "$ref": "#/components/schemas/GapDetails" },
+            {
+              "type": "object",
+              "required": ["gapCode", "gapDisplayName"],
+              "properties": {
+                "gapCode": {
+                  "type": "string",
+                  "description": "Gap code"
+                },
+                "gapDisplayName": {
+                  "type": "string",
+                  "description": "Gap description"
+                },
+                "actionRequired": {
+                  "type": "string",
+                  "description": "Action that should be taken by the Health Care Provider",
+                  "example": "Perform & code B/P check. Controlled is BELOW 140/90. Take REPEAT if necessary."
+                },
+                "priorValues": {
+                  "type": "string",
+                  "description": "Prior values of clinical tests or procedure results",
+                  "example": "Systolic / Diastolic: [X/Y]"
+                },
+                "collectionDate": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date in which the prior values were documented",
+                  "example": "1990-07-19"
+                },
+                "cptCode": {
+                  "type": "string",
+                  "description": "Recommended CPT II code associated with the gap",
+                  "example": "3074F"
+                },
+                "cptDescription": {
+                  "type": "string",
+                  "description": "Recommended CPT II description associated with the gap",
+                  "example": "Most recent systolic BP less than 130 mm Hg"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "DiagnosisGaps": {
+        "type": "array",
+        "items": {
+          "allOf": [
+            { "$ref": "#/components/schemas/GapDetails" },
+            {
+              "type": "object",
+              "required": ["hccCode", "icdCode", "hccDescription", "icdDescription", "hccModel", "gapType"],
+              "properties": {
+                "hccCode": {
+                  "type": "integer",
+                  "description": "Gap HCC code"
+                },
+                "icdCode": {
+                  "type": "string",
+                  "description": "ICD code"
+                },
+                "hccDescription": {
+                  "type": "string",
+                  "description": "HCC description"
+                },
+                "icdDescription": {
+                  "type": "string",
+                  "description": "ICD description"
+                },
+                "hccModel": {
+                  "type": "string",
+                  "description": "Specific HCC model"
+                },
+                "gapType": {
+                  "type": "string",
+                  "description": "Indication for a previously known diagnosis or a suspected diagnosis",
+                  "enum": ["KNOWN", "SUSPECTED"]
+                },
+                "rafScore": {
+                  "type": "integer",
+                  "description": "Risk adjustment factor which is used for gap sorting",
+                  "example": 2.659
+                }
+              }
+            }
+          ]
+        }
+      },
+      "FeedbackRequest": {
+        "type": "object",
+        "required": [
+          "data_type",
+          "patient_id",
+          "id",
+          "action",
+          "organization"
+        ],
+        "description": "Base feedback request with common fields",
+        "properties": {
+          "data_type": {
+            "type": "string",
+            "description": "Type of gaps data - diagnosis_gap or insight",
+            "enum": ["diagnosis_gap", "insight"]
+          },
+          "patient_id": {
+            "type": "string",
+            "description": "The unique ID of the patient"
+          },
+          "id": {
+            "type": "string",
+            "description": "The unique ID of the gap selected by the user"
+          },
+          "action": {
+            "type": "object",
+            "required": ["date", "type"],
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "The date when the action was taken in yyyy-mm-dd format, using the practice's timezone"
+              },
+              "type": {
+                "type": "string",
+                "description": "The reason of the reported action. Examples: AGREE, DISMISS"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason of the reported action."
+              },
+              "notes": {
+                "type": "string",
+                "description": "The free text added by the user for the reported action."
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "required": ["name", "vim_organization_key"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The organization name associated with the user."
+              },
+              "vim_organization_key": {
+                "type": "string",
+                "description": "The unique organization ID as available in the Vim system."
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "first_name": {
+                "type": "string",
+                "description": "The user's first name."
+              },
+              "last_name": {
+                "type": "string",
+                "description": "The user's last name."
+              },
+              "npi": {
+                "type": "string",
+                "description": "The user's National Provider Identifier (NPI) (10 digits)."
+              },
+              "ehr_username": {
+                "type": "string",
+                "description": "The user's EHR username."
+              }
+            }
+          },
+          "encounter": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The EHR encounter ID."
+              },
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "The encounter date in yyyy-mm-dd format, using the practice's timezone"
+              }
+            }
+          }
+        }
+      },
+      "DiagnosisGapFeedback": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/FeedbackRequest" },
+          {
+            "type": "object",
+            "required": ["data_type"],
+            "properties": {
+              "data_type": {
+                "type": "string",
+                "enum": ["diagnosis_gap"],
+                "description": "Type of gaps data - diagnosis_gap"
+              },
+              "system": {
+                "type": "string",
+                "description": "The main gap system as displayed in the application.",
+                "enum": ["ICD", "HCC"]
+              },
+              "code": {
+                "type": "string",
+                "description": "The original code provided by the customer, which corresponds to the selected code(s) by the user."
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the gap selected by the user."
+              },
+              "type": {
+                "type": "string",
+                "description": "Indication for a previously known diagnosis or a suspected diagnosis.",
+                "enum": ["KNOWN", "SUSPECTED"]
+              },
+              "medical_codes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "system", 
+                    "code"
+                  ],
+                  "properties": {
+                    "system": {
+                      "type": "string",
+                      "enum": ["CPT", "ICD"],
+                      "default": "ICD",
+                      "description": "[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "[CONDITIONAL] - The medical code - Required when system is provided"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description corresponding to the medical code"
+                    }
+                  }
+                },
+                "description": "The medical code(s) selected by the user with their descriptions."
+              }
+            }
+          }
+        ]
+      },
+      "InsightFeedback": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/FeedbackRequest" },
+          {
+            "type": "object",
+            "required": ["data_type"],
+            "properties": {
+              "data_type": {
+                "type": "string",
+                "enum": ["insight"],
+                "description": "Type of data - insight"
+              },
+              "id": {
+                "type": "string",
+                "description": "A unique identifier per insight and per patient"
+              },
+              "title": {
+                "type": "string",
+                "description": "The name of the insight as it will be displayed in the application"
+              },
+              "code": {
+                "type": "string",
+                "description": "The insight code to present in the application next to the title"
+              },
+              "category": {
+                "type": "string",
+                "description": "The category of the insight (RISK/ QUALITY/ RX/ SDOH/ CCM/ UTILIZATION/ ADT/ CLINICAL INSIGHTS)",
+                "enum": ["RISK", "QUALITY", "RX", "SDOH", "CCM", "UTILIZATION", "ADT", "CLINICAL INSIGHTS"]
+              },
+              "description": {
+                "type": "string",
+                "description": "Free-text explanation about the insight"
+              },
+              "type": {
+                "type": "string",
+                "description": "The type or program affiliation (e.g., HEDIS, ACO, STAR)"
+              },
+              "medical_codes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string",
+                      "enum": ["CPT", "ICD"],
+                      "description": "The system of the medical code (CPT/ ICD)"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "The medical code"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description corresponding to the medical code"
+                    }
+                  }
+                },
+                "description": "Array of medical codes associated with the insight - each object contains a medical code, its system, and description."
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the insight. An option to filter closed insights",
+                "enum": ["OPEN", "CLOSED"]
+              },
+              "source": {
+                "type": "string",
+                "description": "The source of the insight"
+              },
+              "last_recorded": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Most recent date of a relevant service in yyyy-mm-dd format"
+                  },
+                  "provider": {
+                    "type": "object",
+                    "properties": {
+                      "npi": {
+                        "type": "string",
+                        "description": "NPI of the most recent provider"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the most recent provider"
+                      }
+                    }
+                  }
+                },
+                "description": "Information about when and by whom the insight was last recorded"
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional information related to the insight"
+              }
+            }
+          }
+        ]
+      },
+      "FeedbackResponse": {
+        "type": "object",
+        "required": [
+          "update_status"
+        ],
+        "properties": {
+          "update_status": {
+            "type": "string",
+            "default": "SUCCESS",
+            "description": "Status of the feedback update"
+          }
+        },
+        "example": {
+          "update_status": "SUCCESS"
+        }
+      },
+      "DiagnosisGap": {
+        "type": "object",
+        "required": [
+          "data_type",
+          "id",
+          "system",
+          "hcc_model_version"
+        ],
+        "properties": {
+          "data_type": {
+            "type": "string",
+            "enum": ["diagnosis_gap"],
+            "description": "Type of the data used as a discriminator"
+          },
+          "id": {
+            "type": "string",
+            "description": "A unique identifier per gap and per patient"
+          },
+          "system": {
+            "type": "string",
+            "description": "The type of gap system",
+            "enum": ["ICD", "HCC"]
+          },
+          "hcc_model_version": {
+            "type": "string",
+            "description": "Specific HCC model version",
+            "enum": ["CMS-HCC V28, HHS-HCC V07, RX-HCC V08, CMS-ESRD-HCC V24"]
+          },
+          "hcc_code": {
+            "type": "integer",
+            "description": "[CONDITIONAL] Gap HCC code - Required when system is 'HCC'"
+          },
+          "hcc_description": {
+            "type": "string",
+            "description": "HCC description"
+          },
+          "medical_codes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "system", 
+                "code"
+              ],
+              "properties": {
+                "system": {
+                  "default": "ICD",
+                  "type": "string",
+                  "description": "The system of the medical code"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "The medical code"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description corresponding to the medical code"
+                }
+              }
+            },
+            "description": "[CONDITIONAL] Array of medical code records - Each object contains a medical code, its system, and description. Required when system is 'ICD'."
+          },
+          "type": {
+            "type": "string",
+            "description": "Indication for a previously known diagnosis or a suspected diagnosis",
+            "enum": ["KNOWN", "SUSPECTED"]
+          },
+          "status": {
+            "type": "string",
+            "description": "Gap Status. Both open and closed gaps can be retrieved, with an option to filter closed gaps.",
+            "enum": ["OPEN", "CLOSED"]
+          },
+          "source": {
+            "type": "string",
+            "description": "Gap source"
+          },
+          "raf_value": {
+            "type": "number",
+            "format": "float",
+            "description": "Risk adjustment factor which is used for gap sorting"
+          },
+          "last_recorded": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Most recent date of a relevant service in yyyy-mm-dd format"
+              },
+              "provider": {
+                "type": "object",
+                "properties": {
+                  "npi": {
+                    "type": "string",
+                    "description": "NPI of the most recent coding provider"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the most recent coding provider"
+                  }
+                }
+              }
+            },
+            "description": "Information about when and by whom the gap was last recorded"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional information related to the gap"
+          },
+          "custom_fields": {
+            "type": "array",
+            "description": "Additional fields defined by the customer for enhanced context at patient, gap, or insight level",
+            "items": {
+              "type": "object",
+              "required": ["title", "level", "type", "value"],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Title for UI display"
+                },
+                "level": {
+                  "type": "string",
+                  "enum": ["patient", "gap", "insight"],
+                  "description": "Determines where the field appears: patient details, gap card, or insight card"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["string", "integer", "decimal", "date", "cost"],
+                  "description": "Controls how the value is formatted in the UI: 'string' displays as plain text; 'integer' displays whole numbers; 'decimal' displays numbers with 2 decimal places; 'date' formats as MM/DD/YYYY; 'cost' displays numbers with $ prefix"
+                },
+                "value": {
+                  "description": "The actual field value"
+                }
+              }
+            },
+            "example": [
+              {
+                "title": "SDoH Risk Score",
+                "level": "patient",
+                "type": "decimal",
+                "value": 2.56
+              },
+              {
+                "title": "Priority Level",
+                "level": "gap",
+                "type": "string",
+                "value": "High"
+              }
+            ]
+          },
+          "document": {
+            "type": "object",
+            "description": "Document viewer information for displaying supporting PDF evidence directly in Care Insights",
+            "required": ["doc_file_path"],
+            "properties": {
+              "doc_file_path": {
+                "type": "string",
+                "format": "uri",
+                "description": "Path to PDF document in customer's cloud storage (Google Cloud Storage or Azure)",
+                "example": "gs://clinical-docs/patient123.pdf"
+              },
+              "doc_coordinates": {
+                "type": "array",
+                "description": "Optional coordinates array for highlighting specific sections: [pageIndex, pageWidth, pageHeight, sectionPoint.topLeft.x, sectionPoint.topLeft.y, sectionPoint.topRight.x, sectionPoint.topRight.y, sectionPoint.bottomRight.x, sectionPoint.bottomRight.y, sectionPoint.bottomLeft.x, sectionPoint.bottomLeft.y]",
+                "items": {"type": "number"},
+                "minItems": 11,
+                "maxItems": 11,
+                "example": [5, 8.4444, 11.0833, 0.8356, 7.136, 7.1295, 7.136, 7.1295, 1.2095, 0.8356, 1.2095]
+              }
+            }
+          }
+        }
+      },
+      "Insight": {
+        "type": "object",
+        "required": [
+          "data_type",
+          "id",
+          "title",
+          "category"
+        ],
+        "properties": {
+          "data_type": {
+            "type": "string",
+            "enum": ["insight"],
+            "description": "Type of the data - used as a discriminator"
+          },
+          "id": {
+            "type": "string",
+            "description": "A unique identifier per insight and per patient"
+          },
+          "title": {
+            "type": "string",
+            "description": "The name of the insight as it will be displayed in the application"
+          },
+          "code": {
+            "type": "string",
+            "description": "The insight code to present in the application next to the title"
+          },
+          "category": {
+            "type": "string",
+            "description": "The category of the insight (RISK/ QUALITY/ RX/ SDOH/ CCM/ UTILIZATION/ ADT/ CLINICAL INSIGHTS)",
+            "enum": ["RISK", "QUALITY", "RX", "SDOH", "CCM", "UTILIZATION", "ADT", "CLINICAL INSIGHTS"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Free-text explanation about the insight"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type or program affiliation (e.g., HEDIS, ACO, STAR)"
+          },
+          "medical_codes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "system", 
+                "code", 
+                "description"
+              ],
+              "properties": {
+                "system": {
+                  "type": "string",
+                  "enum": ["CPT", "ICD"],
+                  "description": "The system of the medical code (CPT/ ICD)"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "The medical code"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description corresponding to the medical code"
+                }
+              }
+            },
+            "description": "Array of medical codes associated with the insight - each object contains a medical code, its system, and description."
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the insight. An option to filter closed insights",
+            "enum": ["OPEN", "CLOSED"]
+          },
+          "source": {
+            "type": "string",
+            "description": "The source of the insight"
+          },
+          "last_recorded": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Most recent date of a relevant service in yyyy-mm-dd format"
+              },
+              "provider": {
+                "type": "object",
+                "properties": {
+                  "npi": {
+                    "type": "string",
+                    "description": "NPI of the most recent provider"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the most recent provider"
+                  }
+                }
+              }
+            },
+            "description": "Information about when and by whom the insight was last recorded"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional information related to the insight"
+          },
+          "custom_fields": {
+            "type": "array",
+            "description": "Additional fields defined by the customer for enhanced context at patient, gap, or insight level",
+            "items": {
+              "type": "object",
+              "required": ["title", "level", "type", "value"],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Title for UI display"
+                },
+                "level": {
+                  "type": "string",
+                  "enum": ["patient", "gap", "insight"],
+                  "description": "Determines where the field appears: patient details, gap card, or insight card"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["string", "integer", "decimal", "date", "cost"],
+                  "description": "Controls how the value is formatted in the UI: 'string' displays as plain text; 'integer' displays whole numbers; 'decimal' displays numbers with decimal places; 'date' formats as MM/DD/YYYY; 'cost' displays numbers with $ prefix"
+                },
+                "value": {
+                  "description": "The actual field value"
+                }
+              }
+            },
+            "example": [
+              {
+                "title": "SDoH Risk Score",
+                "level": "patient",
+                "type": "decimal",
+                "value": 2.56
+              },
+              {
+                "title": "Priority Level",
+                "level": "gap",
+                "type": "string",
+                "value": "High"
+              }
+            ]
+          },
+          "document": {
+            "type": "object",
+            "description": "Document viewer information for displaying supporting PDF evidence directly in Care Insights",
+            "required": ["doc_file_path"],
+            "properties": {
+              "doc_file_path": {
+                "type": "string",
+                "format": "uri",
+                "description": "Path to PDF document in customer's cloud storage (Google Cloud Storage or Azure)",
+                "example": "gs://clinical-docs/patient123.pdf"
+              },
+              "doc_coordinates": {
+                "type": "array",
+                "description": "Optional coordinates array for highlighting specific sections: [pageIndex, pageWidth, pageHeight, sectionPoint.topLeft.x, sectionPoint.topLeft.y, sectionPoint.topRight.x, sectionPoint.topRight.y, sectionPoint.bottomRight.x, sectionPoint.bottomRight.y, sectionPoint.bottomLeft.x, sectionPoint.bottomLeft.y]",
+                "items": {"type": "number"},
+                "minItems": 11,
+                "maxItems": 11,
+                "example": [5, 8.4444, 11.0833, 0.8356, 7.136, 7.1295, 7.136, 7.1295, 1.2095, 0.8356, 1.2095]
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "code",
+          "reason"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Error code indicating the type of error"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Detailed explanation of the error"
+          }
+        },
+        "example": {
+          "code": "SERVER_ERROR",
+          "reason": "An unexpected error occurred while processing the request"
+        }
+      }
+    },
+    "securitySchemes": {
+      "service": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "",
+            "scopes": {}
+          }
+        },
+        "x-google-issuer": "https://api.genairisk.dev.example.com/",
+        "x-google-audiences": "test3,https://sage.health/,test4",
+        "x-google-jwks_uri": "https://us-central1-clinicalnotesapp.cloudfunctions.net/getPublicCert"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Bearer authentication token obtained from the /oauth/token endpoint",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "BadRequestError": {
+        "description": "Bad request due to incorrect or missing parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "missingRequiredParams": {
+                "summary": "Missing Required Parameters",
+                "value": {
+                  "code": "MISSING_REQUIRED_PARAMETERS",
+                  "reason": "The request is missing one or more required parameters"
+                }
+              },
+              "invalidFormat": {
+                "summary": "Invalid Format",
+                "value": {
+                  "code": "INVALID_FORMAT",
+                  "reason": "One or more parameters have an invalid format"
+                }
+              },
+              "invalidValue": {
+                "summary": "Invalid Value",
+                "value": {
+                  "code": "INVALID_VALUE",
+                  "reason": "One or more parameters contain invalid values"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Unauthorized access, invalid authentication credentials",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "code": "INVALID_CREDENTIALS",
+              "reason": "The provided authentication credentials are invalid"
+            }
+          }
+        }
+      },
+      "ForbiddenError": {
+        "description": "Forbidden, insufficient permissions",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "code": "FORBIDDEN",
+              "reason": "You do not have permission to access this resource"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "userNotFound": {
+                "summary": "User Not Found",
+                "value": {
+                  "code": "USER_NOT_FOUND",
+                  "reason": "The specified user does not exist"
+                }
+              },
+              "patientNotFound": {
+                "summary": "Patient Not Found",
+                "value": {
+                  "code": "PATIENT_NOT_FOUND",
+                  "reason": "No patient matching the provided criteria was found in the system"
+                }
+              },
+              "gapNotFound": {
+                "summary": "Gap Not Found",
+                "value": {
+                  "code": "GAP_NOT_FOUND",
+                  "reason": "The specified gap was not found for this patient"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "code": "SERVER_ERROR",
+              "reason": "An unexpected error occurred while processing the request"
+            }
+          }
+        }
+      }
+    }
+  }
+} 

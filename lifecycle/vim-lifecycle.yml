@@ -1,0 +1,24 @@
+generated: '2026-07-24'
+method: searched
+source:
+  - https://status.getvim.com
+  - https://docs.getvim.com/vim-os-js/setting-up
+  - openapi/vim-data-source-openapi-original.json
+versioning:
+  rest:
+    scheme: none-in-path
+    note: Data Source REST paths carry no version segment.
+  sdk:
+    scheme: semver
+    current_major: 2.x
+    docs_majors: [1.x.x, 2.x.x]
+    note: VimOS.js browser SDK (vim-os-js-browser) latest 2.0.20; docs published per major.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No published deprecation/sunset policy found; SDK 1.x docs remain available alongside 2.x.
+sla:
+  url: null
+  uptime_target: null
+status_page: https://status.getvim.com
+deprecated_operations: []

@@ -1,0 +1,12 @@
+generated: '2026-07-24'
+method: generated
+source: openapi/vim-data-source-openapi-original.json
+skills:
+  - file: vim-identify-and-fetch-insights.md
+    name: Identify a patient and fetch their care insights
+    api: openapi/vim-data-source-openapi-original.json
+    operations: [post-oauth-token, post-patient-identify, post-insights-fetch]
+  - file: vim-submit-insight-feedback.md
+    name: Submit clinician feedback on a gap or insight
+    api: openapi/vim-data-source-openapi-original.json
+    operations: [post-oauth-token, post-insights-feedback]

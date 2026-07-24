@@ -1,0 +1,46 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/vim-data-source-openapi-original.json
+# Binds each derived MCP candidate tool to its backing OpenAPI operationId, so
+# each tool inherits a REAL inputSchema (that operation's requestBody). No
+# GraphQL surface exists; no hosted MCP server exists (tools are candidate).
+surfaces:
+  openapi: openapi/vim-data-source-openapi-original.json
+  graphql: null
+  mcp:
+    url: null
+    status: candidate
+    note: No official hosted Vim MCP server; tools derived from OpenAPI operations.
+crosswalk:
+  - tool: get_access_token
+    category: auth
+    rest: [post-oauth-token]
+    binding: rest
+    confidence: high
+    note: inputSchema = AuthTokenRequest (client_id, client_secret, grant_type).
+  - tool: identify_patient
+    category: patient
+    rest: [post-patient-identify]
+    binding: rest
+    confidence: high
+    note: inputSchema = PatientDetails (first_name, last_name, dob, + conditional ids).
+  - tool: fetch_patient_insights
+    category: insights
+    rest: [post-insights-fetch]
+    binding: rest
+    confidence: high
+    note: inputSchema = Patient (patient_id).
+  - tool: send_insight_feedback
+    category: insights
+    rest: [post-insights-feedback]
+    binding: rest
+    confidence: high
+    note: inputSchema = oneOf(DiagnosisGapFeedback, InsightFeedback), discriminated by data_type.
+mcp_only: []
+rest_only: []
+coverage:
+  tools_named: 4
+  tools_bound: 4
+  mcp_only: 0
+  rest_ops_total: 4
+  rest_ops_with_tool: 4

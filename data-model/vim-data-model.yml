@@ -1,0 +1,92 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/vim-data-source-openapi-original.json
+# Entity-relationship graph derived from OpenAPI schemas ($ref links, id-reference
+# fields, and allOf composition) for the Vim Data Source API.
+entities:
+  - name: AuthToken
+    schema: AuthTokenResponse
+    key: access_token
+    description: Bearer JWT issued by POST /oauth/token, TTL 3600s.
+  - name: Patient
+    schema: Patient / PatientDetails / IdentifyPatientResponse
+    key: patient_id
+    description: >-
+      A member identified from first_name, last_name, dob (+ conditional
+      member_id / ehr_id / zip_code). Identification returns a stable patient_id
+      and an is_eligible flag.
+  - name: Insight
+    schema: Insight
+    key: id
+    discriminator: data_type=insight
+    categories: [RISK, QUALITY, RX, SDOH, CCM, UTILIZATION, ADT, CLINICAL INSIGHTS]
+    description: A patient-care insight surfaced at the point of care.
+  - name: DiagnosisGap
+    schema: DiagnosisGap
+    key: id
+    discriminator: data_type=diagnosis_gap
+    systems: [ICD, HCC]
+    description: A coding/diagnosis gap (KNOWN or SUSPECTED) with HCC/ICD coding.
+  - name: GapDetails
+    schema: GapDetails
+    key: gap_id
+    description: Common gap attributes (status, last recorded DOS/NPI/provider, source).
+  - name: MedicalCode
+    schema: inline (Insight.medical_codes[], DiagnosisGap.medical_codes[])
+    key: [system, code]
+    systems: [CPT, ICD]
+    description: A coded medical concept attached to an insight or gap.
+  - name: Organization
+    schema: inline (FeedbackRequest.organization)
+    key: vim_organization_key
+    description: The Vim organization a feedback action is attributed to.
+  - name: Feedback
+    schema: FeedbackRequest / DiagnosisGapFeedback / InsightFeedback / FeedbackResponse
+    key: id
+    description: >-
+      A user action (e.g. AGREE, DISMISS) reported back against a gap or insight
+      for a patient.
+relationships:
+  - from: Patient
+    to: Insight
+    type: has_many
+    via: patient_id
+  - from: Patient
+    to: DiagnosisGap
+    type: has_many
+    via: patient_id
+  - from: Insight
+    to: GapDetails
+    type: has_one
+    via: allOf-composition
+  - from: DiagnosisGap
+    to: GapDetails
+    type: has_one
+    via: allOf-composition
+  - from: Insight
+    to: MedicalCode
+    type: has_many
+    via: medical_codes
+  - from: DiagnosisGap
+    to: MedicalCode
+    type: has_many
+    via: medical_codes
+  - from: Feedback
+    to: Patient
+    type: belongs_to
+    via: patient_id
+  - from: Feedback
+    to: Organization
+    type: belongs_to
+    via: organization.vim_organization_key
+  - from: Feedback
+    to: DiagnosisGap
+    type: belongs_to
+    via: id (data_type=diagnosis_gap)
+  - from: Feedback
+    to: Insight
+    type: belongs_to
+    via: id (data_type=insight)
+notes: >-
+  Not a FHIR model. Vim uses proprietary insight/gap resources keyed by a stable
+  patient_id plus a stable unique id per insight/gap.
