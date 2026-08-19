@@ -43,7 +43,7 @@ tags:
 - OAuth
 created: '2026-07-24'
 modified: '2026-08-15'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: vim:vim-canvas-sdk
   name: Vim Canvas SDK (VimOS.js)
