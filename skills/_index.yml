@@ -1,6 +1,14 @@
-generated: '2026-07-24'
+generated: '2026-08-15'
 method: generated
-source: openapi/vim-data-source-openapi-original.json
+source:
+  - openapi/vim-data-source-openapi-original.json
+  - openapi/vim-rest-api-openapi-original.json
+  - https://docs.getvim.com/api
+  - https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+# Packaged Agent Skills for Vim's marquee flows. Every operationId referenced
+# below is grepped from the spec it names. Two Vim REST API operations ship with
+# NO operationId in the provider's own document; those are referenced by method
+# and path rather than invented.
 skills:
   - file: vim-identify-and-fetch-insights.md
     name: Identify a patient and fetch their care insights
@@ -10,3 +18,27 @@ skills:
     name: Submit clinician feedback on a gap or insight
     api: openapi/vim-data-source-openapi-original.json
     operations: [post-oauth-token, post-insights-feedback]
+  - file: vim-onboard-organization-and-track-users.md
+    name: Onboard an organization to a Vim application and track its users
+    api: openapi/vim-rest-api-openapi-original.json
+    operations:
+      - POST /oauth/token
+      - POST /invitations
+      - getApplicationOrganizations
+      - getApplicationUsersForOrganization
+  - file: vim-retrieve-encounter-chart.md
+    name: Request and download an encounter chart from Vim
+    api: openapi/vim-rest-api-openapi-original.json
+    operations:
+      - POST /oauth/token
+      - getChartRetrievalDownloadURL
+    spans:
+      - VimOS.js SDK (putChartRetrievalRequest)
+      - consumer webhook (asyncapi/vim-webhooks.yml)
+      - Vim REST API (getChartRetrievalDownloadURL)
+notes: >-
+  No provider-published Agent Skills or AGENTS.md exists on any Vim host; these
+  are generated from Vim's own specs and documentation. Vim publishes no
+  operationId for POST /oauth/token or POST /invitations - see
+  overlays/vim-rest-api-overlay.yaml, which supplies stable handles by overlay
+  without mutating the original spec.

@@ -1,0 +1,149 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Vim Data Source API Integration"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Access Token Retrieval",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Authenticate and Retrieve an Access Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{environment}-{customerName}.com/oauth/token",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "This endpoint authenticates clients and provides access tokens for subsequent API calls."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Patient Identification",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Identify an Eligible Patient",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{environment}-{customerName}.com/patient/identify",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": ""
+              },
+              {
+                "name": "Content-Type",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Identifies a patient that is eligible to the service by their personal details information.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Get Patient Care Insights",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Fetching Patient Care Insights ",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{environment}-{customerName}.com/insights/fetch",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": ""
+              },
+              {
+                "name": "Content-Type",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieving patient care insights for the patient identified in the previous step"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Patient Care Insights Feedback",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Sending feedback about the insight",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{environment}-{customerName}.com/insights/feedback",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": ""
+              },
+              {
+                "name": "Content-Type",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sending feedback about the insight"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

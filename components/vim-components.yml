@@ -1,0 +1,89 @@
+generated: '2026-08-15'
+method: searched
+source:
+  - https://docs.getvim.com/vim-os-js/setting-up
+  - https://docs.getvim.com/vim-os-js/vim-hub
+  - https://docs.getvim.com/testing/iframe-config
+  - https://docs.getvim.com/change-log/
+# Vim's product IS an embedded client-side surface: a third-party application is
+# rendered inside the Vim Connect overlay on top of the physician's EHR. These
+# are the prebuilt, Vim-hosted UI surfaces an application can occupy or trigger.
+# They are distinct from the SDK package itself (see packages/) - the package is
+# the loader, these are the rendered surfaces it drives.
+loader:
+  name: VimOS.js
+  global: window.vimSdk
+  cdn: https://connect.getvim.com/vim-os-sdk/v2.x.x/vim-sdk.js
+  npm: vim-os-js-browser
+  format: IIFE (UMD before SDK 2.0.16)
+  note: >-
+    Must be loaded on every page of a multi-page application, before any code
+    that uses it. Vim advises against async/defer on the script tag unless the
+    app guards on the existence of window.vimSdk.
+families:
+  - family: Application container
+    surfaces:
+      - id: canvas-application-iframe
+        name: Vim Canvas application iframe
+        description: >-
+          The application itself, rendered in an iframe inside the Vim Connect
+          overlay above the EHR. Sizing and behaviour are declared in the
+          application manifest in the Vim Console.
+        configuration: application manifest (Vim Console) + iframe config
+        docs: https://docs.getvim.com/testing/iframe-config
+      - id: settings-application
+        name: Settings application
+        description: >-
+          An optional second, separately-registered application surface for
+          per-organization configuration, driven by the VimAppSettings SDK and
+          authenticated with an idToken plus organization id.
+        docs: https://docs.getvim.com/testing/creating-application
+  - family: Vim Hub triggers
+    docs: https://docs.getvim.com/vim-os-js/vim-hub
+    surfaces:
+      - id: push-notification
+        name: Push notification
+        call: vimOS.hub.pushNotification.show()
+        description: >-
+          Vim-rendered notification surfaced to the clinician inside Vim
+          Connect. Since SDK 2.x it resolves with a TriggerResult
+          ({ status: sent | blocked | failed, type, description }) instead of
+          throwing when the manifest disallows it.
+        capability_flag: vimOS.hub.capabilities.pushNotifications ({ enabled, reason? })
+      - id: auto-popup
+        name: Auto popup
+        call: vimOS.hub.autoPopup()
+        description: >-
+          Programmatically opens the application over the EHR workflow. Same
+          TriggerResult contract as push notification since SDK 2.x.
+        capability_flag: vimOS.hub.capabilities.autoPopup ({ enabled, reason? })
+      - id: dynamic-tooltip
+        name: Application tooltip
+        description: >-
+          Text shown when the clinician hovers the application on the Vim
+          Connect overlay; falls back to the application name from the manifest.
+        docs: https://docs.getvim.com/testing/creating-application
+  - family: Marketplace / store presentation
+    surfaces:
+      - id: store-page
+        name: Vim application store page
+        description: >-
+          Vim-hosted listing page for the application inside the Vim Connect
+          marketplace, authored in the Vim Console and previewable before
+          release. Not a code component - a Vim-rendered surface the developer
+          configures.
+        docs: https://docs.getvim.com/testing/submitting-application
+capability_gating:
+  note: >-
+    Every trigger surface is gated twice - by the application manifest declared
+    in the Vim Console, and at runtime by the clinic's own settings. An
+    application should read vimOS.hub.capabilities before calling a trigger; a
+    disabled capability returns reason 'capability_disabled' or
+    'not_allowed_by_manifest' rather than failing silently.
+  since: SDK 2.0.20
+not_present:
+  - No framework-agnostic web component / custom element library is published.
+  - No hosted embeddable dashboard or analytics iframe is published.
+  - >-
+    React is supported through documented patterns and a demo app rather than a
+    published component package (docs.getvim.com/vim-os-js/reactjs).

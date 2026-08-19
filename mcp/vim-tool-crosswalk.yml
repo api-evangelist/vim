@@ -1,11 +1,29 @@
-generated: '2026-07-24'
+generated: '2026-08-15'
 method: derived
-source: openapi/vim-data-source-openapi-original.json
+source:
+  - openapi/vim-data-source-openapi-original.json
+  - openapi/vim-rest-api-openapi-original.json
+  - mcp/vim-mcp.yml
 # Binds each derived MCP candidate tool to its backing OpenAPI operationId, so
 # each tool inherits a REAL inputSchema (that operation's requestBody). No
 # GraphQL surface exists; no hosted MCP server exists (tools are candidate).
+# Vim ships TWO REST surfaces; only the customer-hosted Data Source was used to
+# derive candidate tools, so every Vim-hosted REST operation is rest_only.
 surfaces:
-  openapi: openapi/vim-data-source-openapi-original.json
+  openapi:
+    - file: openapi/vim-data-source-openapi-original.json
+      base_url: 'https://{environment}-{customerName}.com'
+      hosted_by: customer
+      operations: 4
+      gated: false
+    - file: openapi/vim-rest-api-openapi-original.json
+      base_url: https://api.getvim.com/v1
+      hosted_by: Vim
+      operations: 6
+      gated: true
+      gate: >-
+        OAuth 2.0 client credentials issued by Vim; no self-service signup, and
+        the calling application server must be US-hosted.
   graphql: null
   mcp:
     url: null
@@ -17,7 +35,10 @@ crosswalk:
     rest: [post-oauth-token]
     binding: rest
     confidence: high
-    note: inputSchema = AuthTokenRequest (client_id, client_secret, grant_type).
+    note: >-
+      inputSchema = AuthTokenRequest (client_id, client_secret, grant_type).
+      The Vim-hosted REST API exposes an identical POST /oauth/token, so this
+      one tool covers both surfaces if the base URL is parameterised.
   - tool: identify_patient
     category: patient
     rest: [post-patient-identify]
@@ -37,10 +58,60 @@ crosswalk:
     confidence: high
     note: inputSchema = oneOf(DiagnosisGapFeedback, InsightFeedback), discriminated by data_type.
 mcp_only: []
-rest_only: []
+rest_only:
+  - operation: POST /invitations
+    operationId: null
+    spec: openapi/vim-rest-api-openapi-original.json
+    reason: >-
+      No candidate tool derived. Account+organization creation is a
+      non-idempotent provisioning write with a 10/min limit and named 409
+      conflict codes - it needs human-in-the-loop confirmation before it is
+      worth exposing as an agent tool.
+    note: The provider's spec ships no operationId on this operation.
+  - operation: GET /applications/{applicationId}/organizations
+    operationId: getApplicationOrganizations
+    spec: openapi/vim-rest-api-openapi-original.json
+    reason: Read-only listing; a strong candidate tool, not yet derived into mcp/vim-mcp.yml.
+  - operation: GET /applications/{applicationId}/organizations/{organizationId}/users
+    operationId: getApplicationUsersForOrganization
+    spec: openapi/vim-rest-api-openapi-original.json
+    reason: Read-only listing; a strong candidate tool, not yet derived.
+  - operation: GET /appointments/{vimOrganizationId}
+    operationId: getFutureAppointments
+    spec: openapi/vim-rest-api-openapi-original.json
+    reason: >-
+      Read-only, paginated (offset/limit, max 50), returns PHI-adjacent
+      scheduling data from a once-daily snapshot. Any tool built on it must
+      surface the up-to-24-hour staleness.
+  - operation: GET /chart-retrieval/download-url/{requestId}
+    operationId: getChartRetrievalDownloadURL
+    spec: openapi/vim-rest-api-openapi-original.json
+    reason: >-
+      Read-only but returns a presigned URL to PHI. Half of an async flow whose
+      other half is a VimOS.js SDK call plus a webhook, so it is not
+      self-contained as a tool.
+sdk_only:
+  - call: vimOS.ehr.ehrState.encounter.putChartRetrievalRequest()
+    reason: >-
+      Browser-only VimOS.js capability with no REST equivalent - the chart
+      export can ONLY be initiated from inside the EHR session, never
+      server-side. Completion arrives on a consumer webhook
+      (asyncapi/vim-webhooks.yml).
+  - call: vimOS.ehr.ehrState.patient.getLabResults() / getVitals() / getMedicationList() / getAllergyList() / getProblemList()
+    reason: >-
+      EHR state reads available only inside the Vim Connect session; no REST
+      projection exists.
+  - call: vimOS.hub.pushNotification.show() / vimOS.hub.autoPopup()
+    reason: In-EHR UI triggers; no server-side equivalent.
 coverage:
-  tools_named: 4
-  tools_bound: 4
+  mcp_tools: 4
+  rest_operations_total: 10
+  rest_operations_data_source: 4
+  rest_operations_vim_hosted: 6
+  bound: 4
   mcp_only: 0
-  rest_ops_total: 4
-  rest_ops_with_tool: 4
+  rest_only: 5
+  sdk_only: 3
+  note: >-
+    POST /oauth/token exists on both REST surfaces and is counted once in
+    `bound`; the other five Vim-hosted operations are unbound.

@@ -1,24 +1,89 @@
-generated: '2026-07-24'
-method: derived
-source: openapi/vim-data-source-openapi-original.json
+generated: '2026-08-15'
+method: searched
+docs: https://docs.getvim.com/api
+source:
+  - https://docs.getvim.com/api
+  - https://docs.getvim.com/testing/managing-account
+  - openapi/vim-data-source-openapi-original.json
+  - openapi/vim-rest-api-openapi-original.json
+  - well-known/vim-openid-configuration.json
+# Vim uses one auth model across both REST surfaces: OAuth 2.0 client
+# credentials exchanged for a short-lived bearer JWT, then sent as
+# Authorization: Bearer on every resource request. Credentials are issued by
+# Vim, not self-service - the Client ID and secret are read from the My Account
+# tab of the Vim Console (console.getvim.com) after Vim provisions a Vim Canvas
+# developer account.
 summary:
   types:
-  - http
-  - oauth2
+    - http
+    - oauth2
   oauth2_flows:
-  - implicit
+    - clientCredentials
+  self_service_credentials: false
+  credential_source: https://console.getvim.com (My Account tab)
 schemes:
-- name: service
-  type: oauth2
-  flows:
-  - flow: implicit
-    scopes: 0
-  sources:
-  - openapi/vim-data-source-openapi-original.json
-- name: bearerAuth
-  type: http
-  scheme: bearer
-  bearerFormat: JWT
-  description: Bearer authentication token obtained from the /oauth/token endpoint
-  sources:
-  - openapi/vim-data-source-openapi-original.json
+  - name: Access token
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+    description: >-
+      Bearer token sent in the Authorization header on every authenticated
+      resource request. Obtained from POST /oauth/token.
+    applied_to: all Vim REST API operations except POST /oauth/token
+    sources:
+      - openapi/vim-rest-api-openapi-original.json
+      - openapi/vim-data-source-openapi-original.json
+  - name: service
+    type: oauth2
+    flows:
+      - flow: implicit
+        scopes: 0
+    note: >-
+      The Data Source spec declares an oauth2 scheme with an implicit flow and
+      no scopes; in practice the documented exchange is client_credentials. The
+      spec block is thin, not the real grant.
+    sources:
+      - openapi/vim-data-source-openapi-original.json
+token_exchange:
+  endpoint: POST /oauth/token
+  base_url: https://api.getvim.com/v1
+  grant_type: client_credentials
+  request_media_type: application/json
+  request_fields:
+    - client_id
+    - client_secret
+    - grant_type
+  response_fields:
+    - access_token
+    - token_type
+    - expires_in
+  token_type: Bearer
+  token_format: JWT
+  default_ttl_seconds: 3600
+  errors:
+    - status: 400
+      meaning: Bad request - ensure all required parameters were sent.
+    - status: 401
+      meaning: Unauthorized - ensure the client id and client secret are correct.
+authorization_server:
+  host: https://auth.getvim.com
+  kind: Auth0 tenant
+  openid_configuration: well-known/vim-openid-configuration.json
+  oauth_authorization_server: well-known/vim-oauth-authorization-server.json
+  note: >-
+    Machine-to-machine access is audience-scoped rather than scope-scoped; see
+    scopes/vim-scopes.yml.
+sdk_authentication:
+  surface: VimOS.js
+  model: >-
+    Browser applications authenticate through the Vim Connect session rather
+    than by holding a client secret; the SDK is initialised with the
+    application identity and the EHR session supplies user context. The optional
+    VimAppSettings SDK exchanges an idToken plus organization id.
+  docs: https://docs.getvim.com/vim-os-js/authentication
+constraints:
+  geography: >-
+    The Vim REST API is available only to application servers hosted within the
+    United States. Developers outside the US may read the docs and call via VPN,
+    but the production application server must be US-hosted.
+  source: https://docs.getvim.com/api

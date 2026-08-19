@@ -1,0 +1,95 @@
+generated: '2026-08-15'
+method: searched
+source:
+  - https://docs.getvim.com/testing/managing-account
+  - https://docs.getvim.com/testing/managing-mock-ehr-account
+  - https://docs.getvim.com/testing/creating-application
+  - https://docs.getvim.com/api
+  - https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+# Vim ships a real, hosted test environment: the Vim Sandbox EHR, reached from
+# the Vim Console (console.getvim.com) with a Vim Canvas developer account. It
+# is a full mock EHR - developers create patients, encounters, referrals,
+# orders, problems and claims by hand and drive their app against them. Two Vim
+# REST API operations additionally accept published magic identifiers that
+# return de-identified canned payloads without touching live PHI.
+available: true
+kind: hosted-mock-ehr
+console:
+  url: https://console.getvim.com
+  name: Vim Console
+  access: >-
+    Vim Canvas developer account, provisioned by Vim. The Account Admin receives
+    an email invitation and sets a password; there is no public self-signup.
+  provides:
+    - Client ID and client secret (My Account tab) for SDK/API integration
+    - Application creation and manifest configuration (Applications tab)
+    - Sandbox EHR access (Sandbox EHR tab)
+    - Multiple application versions per environment - local, dev, test, demo or custom (Manage versions tab)
+    - Team member invitation (Users tab)
+    - Application submission for Vim review, and marking an application live
+sandbox_ehr:
+  name: Vim Sandbox EHR
+  docs: https://docs.getvim.com/testing/managing-mock-ehr-account
+  shared_scope: >-
+    Data created in the Sandbox EHR is stored under the developer account
+    instance and is visible to all users belonging to that account.
+  creatable_fixtures:
+    - Patients (New Patient; mandatory fields marked with *)
+    - Encounters / appointments (reason free-text, any future datetime range)
+    - Locked (signed) encounters - required before chart extraction
+    - Referrals
+    - Orders
+    - Problem-list problems
+    - Claims
+    - Queue items
+  patient_flags_used_by_tests:
+    - field: Self Pay
+      required_value: 'False'
+      needed_for: chart retrieval request
+    - field: Release of information
+      required_value: Yes, Release Allowed
+      needed_for: chart retrieval request
+test_identifiers_note: >-
+  Published verbatim by Vim in the Vim REST API reference. These are Vim's own
+  documented values, not invented test data.
+test_identifiers:
+  - id: appointments-demo-organization
+    parameter: vimOrganizationId
+    value: '123456789'
+    operation: GET /appointments/{vimOrganizationId}
+    behaviour: >-
+      Returns a predefined JSON response simulating real appointment data with
+      de-identified data. Caller must still be authorized.
+    source: https://docs.getvim.com/api
+  - id: chart-retrieval-demo-request
+    parameter: requestId
+    value: a1b2c3d4e5f6a7b8c9d0
+    operation: GET /chart-retrieval/download-url/{requestId}
+    behaviour: >-
+      Returns a password-protected predefined ZIP simulating real chart
+      retrieval data with de-identified data. Caller must still be authorized.
+    zip_password: demo-app-id
+    source: https://docs.getvim.com/api
+test_vs_live:
+  key_prefixes: none
+  note: >-
+    Vim does NOT use test-mode vs live-mode key prefixes. The same OAuth 2.0
+    client-credentials client is used against api.getvim.com/v1 in both cases;
+    test behaviour is selected by the magic identifiers above, and by whether
+    the application is pointed at the Sandbox EHR or a live clinic.
+supported_ehrs_for_testing:
+  - Sandbox EHR (Vim, for testing)
+  - eClinicalWorks (ECW)
+  - athenahealth
+supported_ehrs_note: Applies to the appointments daily-sync surface.
+time_simulation:
+  supported: false
+  note: >-
+    No test clocks or time-travel tooling. Where timing matters it is real - the
+    appointments surface is a once-daily snapshot with up to a 24-hour lag, and
+    chart-retrieval requests carry a review time of roughly 3 working days
+    unless explicitly approved from the Clinical Data Exchange application.
+gaps:
+  - No public self-service sandbox signup; a Vim-provisioned developer account is required.
+  - No test credit cards / payment fixtures (not a payments API).
+  - Chart-retrieval sandbox testing requires Vim to enable the feature per developer org by email.

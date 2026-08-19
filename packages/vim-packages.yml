@@ -1,22 +1,81 @@
-generated: '2026-07-24'
+generated: '2026-08-15'
 method: searched
-source: https://www.npmjs.com/package/vim-os-js-browser
+source:
+  - https://registry.npmjs.org/vim-os-js-browser
+  - https://docs.getvim.com/vim-os-js/setting-up
+  - https://docs.getvim.com/change-log/
+# Vim ships ONE first-party client library, distributed two ways: a public npm
+# package and a CDN script tag that Vim tells integrators to prefer. The CDN URL
+# is version-FLOATING (/v2.x.x/), so a script-tag consumer cannot tell which
+# build they are running - recorded below as version: null with a note, which is
+# the finding, not a gap in our checking.
 packages:
   - language: javascript
     registry: npm
     name: vim-os-js-browser
     version: 2.0.20
+    published: '2026-03-12'
     url: https://www.npmjs.com/package/vim-os-js-browser
     install: npm install vim-os-js-browser
     official: true
     description: >-
-      VimOS.js browser SDK to embed applications into EHR workflows via the Vim
-      Canvas platform. Vim recommends loading it directly from
-      connect.getvim.com rather than bundling.
+      VimOS.js browser SDK for embedding applications into EHR workflows via the
+      Vim Canvas platform. Ships TypeScript types (TS 5+) and loads the VimOS
+      runtime asynchronously by default.
     license: Vim
-    homepage: https://docs.getvim.com/vim-os-js/setting-up
+    homepage: https://docs.getvim.com
+    docs: https://docs.getvim.com/vim-os-js/setting-up
+    currency:
+      registry_checked: '2026-08-15'
+      latest_matches_changelog: true
+      note: >-
+        npm 2.0.20 (published 2026-03-12) is the same version the Vim changelog
+        dates 2026-03-10, so the published SDK tracks the documented surface.
+        Release cadence over the last year is roughly every 4-8 weeks
+        (2.0.13 2025-09-17 ... 2.0.20 2026-03-12).
+  - language: javascript
+    registry: cdn
+    name: vim-sdk.js
+    version: null
+    published: null
+    url: https://connect.getvim.com/vim-os-sdk/v2.x.x/vim-sdk.js
+    install: '<script src="https://connect.getvim.com/vim-os-sdk/v2.x.x/vim-sdk.js"></script>'
+    official: true
+    http_status: 200
+    description: >-
+      Vim-hosted CDN build of the VimOS.js SDK. Vim documents this as the
+      preferred integration and explicitly instructs developers NOT to bundle or
+      self-host it. Format changed from UMD (vim-sdk.umd.js) to IIFE
+      (vim-sdk.js) in 2.0.16.
+    note: >-
+      version: null because the distribution URL is UNPINNED - the path segment
+      is the literal major track /v2.x.x/, not a resolved version, so the build
+      served floats to the latest 2.x. There is no CDN metadata endpoint (this
+      is Vim's own origin, not npm/unpkg/jsDelivr) and the response carries no
+      version marker a consumer can read. A script-tag integrator cannot
+      determine which SDK build they are executing; only npm consumers can.
 notes: >-
-  Vim publishes one first-party client library, the VimOS.js browser SDK. The
-  getvim GitHub org hosts demo/starter apps (vim-canvas-demo-app,
-  vim-base-app-template, vim-canvas-demo-angular, vim-ai-scribe-demo-app) that
-  consume it, not additional published SDKs.
+  No Python, Java, .NET, Go, Ruby, PHP or Rust client exists - searched npm
+  (vim-os*, getvim*), and the getvim GitHub org, which hosts only demo/starter
+  applications that CONSUME the SDK (vim-canvas-demo-app,
+  vim-base-app-template, vim-canvas-demo-angular, vim-ai-scribe-demo-app), not
+  additional published libraries. The Vim REST API (api.getvim.com/v1) has no
+  SDK of any kind; it is called over plain HTTP, with a first-party Postman
+  collection published for the Invitations flow.
+registries_checked:
+  - registry: npm
+    result: 1 official package
+  - registry: pypi
+    result: none
+  - registry: rubygems
+    result: none
+  - registry: packagist
+    result: none
+  - registry: crates.io
+    result: none
+  - registry: nuget
+    result: none
+  - registry: maven-central
+    result: none
+  - registry: pkg.go.dev
+    result: none

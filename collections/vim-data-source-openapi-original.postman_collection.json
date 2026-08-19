@@ -1,0 +1,2007 @@
+{
+  "item": [
+    {
+      "id": "69937b9f-d818-4b05-8010-6e8663899ab6",
+      "name": "Access Token Retrieval",
+      "description": {
+        "content": "Obtaining a Bearer service token to make API requests",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "eca73256-a491-40c7-9287-cf92512c45e7",
+          "name": "Authenticate and Retrieve an Access Token",
+          "request": {
+            "name": "Authenticate and Retrieve an Access Token",
+            "description": {
+              "content": "This endpoint authenticates clients and provides access tokens for subsequent API calls.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Environment (e.g., api, staging, dev)",
+                  "type": "any",
+                  "value": "{{environment}}",
+                  "key": "environment"
+                },
+                {
+                  "description": "Customer name",
+                  "type": "any",
+                  "value": "{{customerName}}",
+                  "key": "customerName"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": \"<string>\",\n  \"client_secret\": \"<string>\",\n  \"grant_type\": \"client_credentials\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "00f648de-69f8-44ff-aa50-f5b0fd9e66f1",
+              "name": "Authentication successful",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_id\": \"example-client-id\",\n  \"client_secret\": \"example-client-secret\",\n  \"grant_type\": \"client_credentials\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access_token\": \"string\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "28c2b867-95d6-4b15-9a1a-28062a866b25",
+              "name": "Invalid input",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_id\": \"example-client-id\",\n  \"client_secret\": \"example-client-secret\",\n  \"grant_type\": \"client_credentials\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"INVALID_INPUT\",\n  \"reason\": \"The request is missing required parameters or contained invalid values\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6efc50f8-8bdc-441c-803f-43bbb5aa21be",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_id\": \"example-client-id\",\n  \"client_secret\": \"example-client-secret\",\n  \"grant_type\": \"client_credentials\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"UNAUTHORIZED\",\n  \"reason\": \"The provided authentication credentials are invalid\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9d49fc98-8af9-4970-a3a7-225f29830385",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"client_id\": \"example-client-id\",\n  \"client_secret\": \"example-client-secret\",\n  \"grant_type\": \"client_credentials\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"SERVER_ERROR\",\n  \"reason\": \"An unexpected error occurred while processing the request\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "db3a2a1c-70b7-4997-afae-d155adaf1787",
+      "name": "Patient Identification",
+      "description": {
+        "content": "Identify the patient based on personal information",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "bdbb1c62-d88b-4427-b143-739c37382c31",
+          "name": "Identify an Eligible Patient",
+          "request": {
+            "name": "Identify an Eligible Patient",
+            "description": {
+              "content": "Identifies a patient that is eligible to the service by their personal details information.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "patient",
+                "identify"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Environment (e.g., api, staging, dev)",
+                  "type": "any",
+                  "value": "{{environment}}",
+                  "key": "environment"
+                },
+                {
+                  "description": "Customer name",
+                  "type": "any",
+                  "value": "{{customerName}}",
+                  "key": "customerName"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"dob\": \"<date>\",\n  \"member_id\": \"<string>\",\n  \"ehr_id\": \"<string>\",\n  \"zip_code\": \"<string>\",\n  \"insurer\": \"<string>\",\n  \"state\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "2dd55033-a55d-4dd9-84ee-16480f545af8",
+              "name": "Successfully identified the patient",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"is_eligible\": true,\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3bd64b5f-2125-4b8d-8a26-6f7d75c852e9",
+              "name": "Invalid input",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"INVALID_INPUT\",\n  \"reason\": \"The request is missing required parameters or contained invalid values\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "41f30465-72d9-485f-8a77-3a68738c0c92",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"UNAUTHORIZED\",\n  \"reason\": \"The provided authentication credentials are invalid\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9cc05351-c8be-444d-88d2-6983c6b75611",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"FORBIDDEN\",\n  \"reason\": \"You do not have permission to access this resource\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0871c0d1-3e86-4283-98a5-0a7701a262f4",
+              "name": "Patient/path not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"PATIENT_NOT_FOUND\",\n  \"reason\": \"No patient matching the provided criteria was found in the system\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dec805aa-e864-4917-b26a-693267ae0dce",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "patient",
+                    "identify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dob\": \"1990-07-19\",\n  \"member_id\": \"123445455\",\n  \"ehr_id\": \"a1b2c3d4\",\n  \"zip_code\": \"90210\",\n  \"insurer\": \"United Health Care\",\n  \"state\": \"FL\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"SERVER_ERROR\",\n  \"reason\": \"An unexpected error occurred while processing the request\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "0053c679-1a8f-4923-ba5f-b378a3b230e8",
+      "name": "Get Patient Care Insights",
+      "description": {
+        "content": "Retrieving patient care insights such as diagnosis gaps and care insights",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ab70b9b4-6b6e-4eab-9ffc-c1b56136076c",
+          "name": "Fetching Patient Care Insights ",
+          "request": {
+            "name": "Fetching Patient Care Insights ",
+            "description": {
+              "content": "Retrieving patient care insights for the patient identified in the previous step",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "insights",
+                "fetch"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Environment (e.g., api, staging, dev)",
+                  "type": "any",
+                  "value": "{{environment}}",
+                  "key": "environment"
+                },
+                {
+                  "description": "Customer name",
+                  "type": "any",
+                  "value": "{{customerName}}",
+                  "key": "customerName"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient_id\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "db5c30b0-c943-4d82-bdde-2b2d36c0d5d9",
+              "name": "Successfully fetched insights for the patient",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"data_type\": \"diagnosis_gap\",\n    \"id\": \"gap1\",\n    \"system\": \"ICD\",\n    \"hcc_model_version\": \"CMS-HCC V28\",\n    \"medical_codes\": [\n      {\n        \"system\": \"ICD\",\n        \"code\": \"E11.9\",\n        \"description\": \"Type 2 diabetes mellitus without complications\"\n      }\n    ],\n    \"type\": \"KNOWN\",\n    \"status\": \"OPEN\",\n    \"source\": \"2023 claims\",\n    \"raf_score\": 0.368,\n    \"last_recorded\": {\n      \"date\": \"2023-09-15\",\n      \"provider\": {\n        \"npi\": \"1234567890\",\n        \"name\": \"Jane Smith\"\n      }\n    },\n    \"notes\": \"Example diagnosis gap\",\n    \"custom_fields\": [\n      {\n        \"title\": \"Risk Priority\",\n        \"level\": \"gap\",\n        \"type\": \"string\",\n        \"value\": \"High\"\n      }\n    ]\n  },\n  {\n    \"data_type\": \"diagnosis_gap\",\n    \"id\": \"gap2\",\n    \"system\": \"HCC\",\n    \"hcc_model_version\": \"CMS-HCC V28\",\n    \"hcc_code\": 19,\n    \"hcc_description\": \"Diabetes without Complication\",\n    \"medical_codes\": [\n      {\n        \"system\": \"ICD\",\n        \"code\": \"E11.9\",\n        \"description\": \"Type 2 diabetes mellitus without complications\"\n      }\n    ],\n    \"type\": \"KNOWN\",\n    \"status\": \"OPEN\",\n    \"source\": \"2023 claims\",\n    \"raf_score\": 0.104,\n    \"last_recorded\": {\n      \"date\": \"2023-10-20\",\n      \"provider\": {\n        \"npi\": \"0987654321\",\n        \"name\": \"John Doe\"\n      }\n    },\n    \"notes\": \"Example HCC diagnosis gap\"\n  },\n  {\n    \"data_type\": \"insight\",\n    \"id\": \"insight1\",\n    \"code\": \"CBP\",\n    \"title\": \"Blood Pressure Check\",\n    \"category\": \"QUALITY\",\n    \"description\": \"Annual blood pressure check\",\n    \"type\": \"HEDIS\",\n    \"medical_codes\": [\n      {\n        \"system\": \"CPT\",\n        \"code\": \"3074F\",\n        \"description\": \"Most recent systolic BP less than 130 mm Hg\"\n      }\n    ],\n    \"status\": \"OPEN\",\n    \"source\": \"Quality measure\",\n    \"last_recorded\": {\n      \"date\": \"2023-09-15\",\n      \"provider\": {\n        \"npi\": \"1234567890\",\n        \"name\": \"Jane Smith\"\n      }\n    },\n    \"notes\": \"Annual blood pressure check required\",\n    \"custom_fields\": [\n      {\n        \"title\": \"Patient Risk Score\",\n        \"level\": \"patient\",\n        \"type\": \"decimal\",\n        \"value\": 3.2\n      }\n    ],\n    \"document\": {\n      \"doc_file_path\": \"gs://medical-records/patient123_bp_history.pdf\",\n      \"doc_coordinates\": [\n        1,\n        8.5,\n        11,\n        2.1,\n        3.5,\n        6.2,\n        3.5,\n        6.2,\n        4.8,\n        2.1,\n        4.8\n      ]\n    }\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4419c82c-fe3d-4cce-9655-3926d05bcb1d",
+              "name": "Invalid input",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"INVALID_INPUT\",\n  \"reason\": \"The request is missing required parameters or contained invalid values\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cbe5bddc-be58-4845-b7b9-827d03ab56cf",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"UNAUTHORIZED\",\n  \"reason\": \"The provided authentication credentials are invalid\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "911d6488-5b95-47ae-a9e6-b29d28d51434",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"FORBIDDEN\",\n  \"reason\": \"You do not have permission to access this resource\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a977c7ee-9e33-44c2-8d3d-4f666d04db77",
+              "name": "Patient/path not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"PATIENT_NOT_FOUND\",\n  \"reason\": \"No patient matching the provided identifier was found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ae9b9306-bfac-47e8-9665-3444bbd584c1",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "fetch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"SERVER_ERROR\",\n  \"reason\": \"An unexpected error occurred while processing the request\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "ee69ea8a-3c5d-49f3-bae5-c3c8c7860df0",
+      "name": "Patient Care Insights Feedback",
+      "description": {
+        "content": "Sending feedback about the care insights",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "8d03dc0c-39cb-4c22-b442-906b24b5431e",
+          "name": "Sending feedback about the insight",
+          "request": {
+            "name": "Sending feedback about the insight",
+            "description": {},
+            "url": {
+              "path": [
+                "insights",
+                "feedback"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Environment (e.g., api, staging, dev)",
+                  "type": "any",
+                  "value": "{{environment}}",
+                  "key": "environment"
+                },
+                {
+                  "description": "Customer name",
+                  "type": "any",
+                  "value": "{{customerName}}",
+                  "key": "customerName"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<object>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d19bd1d3-dab1-4688-8e42-abf7e76924f0",
+              "name": "Feedback updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"update_status\": \"SUCCESS\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "259396e6-e69e-40ff-b370-8e3057588fb4",
+              "name": "Invalid input",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"INVALID_INPUT\",\n  \"reason\": \"The request is missing required parameters or contained invalid values\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e1becf63-b29c-40a5-8a8a-64f274cc07b5",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"UNAUTHORIZED\",\n  \"reason\": \"The provided authentication credentials are invalid\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a88bce35-b10d-4529-9e72-cc2c6e74623f",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"FORBIDDEN\",\n  \"reason\": \"You do not have permission to access this resource\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5f6ef0d8-5931-4181-a8f9-231a68671493",
+              "name": "Patient/path not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"PATIENT_NOT_FOUND\",\n  \"reason\": \"No patient matching the provided identifier was found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5828623f-a670-4607-a538-d598d400131c",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "insights",
+                    "feedback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Environment (e.g., api, staging, dev)",
+                      "type": "any",
+                      "value": "{{environment}}",
+                      "key": "environment"
+                    },
+                    {
+                      "description": "Customer name",
+                      "type": "any",
+                      "value": "{{customerName}}",
+                      "key": "customerName"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Authentication Bearer token to allow request to be processed",
+                    "key": "Authorization",
+                    "value": "string"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Media type of the body of the request",
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data_type\": \"diagnosis_gap\",\n  \"patient_id\": \"d4fon0UkvtdfNBW1JfD5\",\n  \"id\": \"Ae3uywUB0YwdwxxdA4M5\",\n  \"action\": {\n    \"date\": \"2024-01-20\",\n    \"type\": \"AGREE\",\n    \"reason\": \"Confirmed diagnosis\",\n    \"notes\": \"Patient records show this diagnosis\"\n  },\n  \"organization\": {\n    \"name\": \"Test Medical Group\",\n    \"vim_organization_key\": \"test-medical-key-12345\"\n  },\n  \"system\": \"HCC\",\n  \"type\": \"KNOWN\",\n  \"status\": \"OPEN\",\n  \"medical_codes\": [\n    {\n      \"system\": \"ICD\",\n      \"code\": \"F32.9\",\n      \"description\": \"Major depressive disorder, single episode, unspecified\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"SERVER_ERROR\",\n  \"reason\": \"An unexpected error occurred while processing the request\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Environment (e.g., api, staging, dev)",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "api",
+      "key": "environment"
+    },
+    {
+      "description": {
+        "content": "Customer name",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "example",
+      "key": "customerName"
+    },
+    {
+      "type": "string",
+      "value": "https://{{environment}}-{{customerName}}.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "28db22ac-c9f5-4506-b98f-d143897b2c06",
+    "name": "Vim Data Source API Integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "API for managing patient insights",
+      "type": "text/plain"
+    }
+  }
+}

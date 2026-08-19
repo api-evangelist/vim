@@ -1,0 +1,90 @@
+generated: '2026-08-15'
+method: searched
+source:
+  - https://docs.getvim.com/api
+  - https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+  - openapi/vim-rest-api-openapi-original.json
+# Vim publishes a per-operation request-per-minute limit in the description of
+# every Vim REST API operation on docs.getvim.com/api, and repeats the chart
+# retrieval limit in the VimOS.js EHR connectivity guide. Limits are stated in
+# prose; Vim documents NO RateLimit-*/Retry-After response headers, so a client
+# cannot read remaining quota at runtime - only the 429 status on exhaustion.
+limit_count: 5
+scope_default: per-application
+window: 1 minute
+exhaustion:
+  status: 429
+  response: 'Too many requests; You have exceeded the rate limit'
+  retry_after_header: false
+  note: >-
+    Every rate-limited operation declares a 429 response in the OpenAPI, but no
+    Retry-After or RateLimit-* header is documented on any of them.
+headers:
+  documented: false
+  observed: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* (RFC 9239 draft) or Retry-After headers are
+    documented anywhere in the Vim REST API reference or the VimOS.js docs. The
+    only runtime rate-limit signal available to an agent is the 429 status code.
+limits:
+  - id: invitations-create
+    operation: POST /invitations
+    scope: per-application
+    window: 1 minute
+    limit: 10
+    burst: null
+    status_on_exhaustion: 429
+    source: https://docs.getvim.com/api
+  - id: applications-organizations
+    operation: GET /applications/{applicationId}/organizations
+    operationId: getApplicationOrganizations
+    scope: per-application
+    window: 1 minute
+    limit: 10
+    burst: null
+    status_on_exhaustion: 429
+    source: https://docs.getvim.com/api
+  - id: applications-organization-users
+    operation: GET /applications/{applicationId}/organizations/{organizationId}/users
+    operationId: getApplicationUsersForOrganization
+    scope: per-application
+    window: 1 minute
+    limit: 50
+    burst: null
+    status_on_exhaustion: 429
+    source: https://docs.getvim.com/api
+  - id: appointments-future
+    operation: GET /appointments/{vimOrganizationId}
+    operationId: getFutureAppointments
+    scope: per-application
+    window: 1 minute
+    limit: 50
+    burst: null
+    status_on_exhaustion: 429
+    source: https://docs.getvim.com/api
+  - id: chart-retrieval-download-url
+    operation: GET /chart-retrieval/download-url/{requestId}
+    operationId: getChartRetrievalDownloadURL
+    scope: per-application
+    window: 1 minute
+    limit: 50
+    burst: null
+    status_on_exhaustion: 429
+    source: https://docs.getvim.com/api
+sdk_limits:
+  - id: sdk-chart-retrieval-request
+    surface: VimOS.js
+    call: vimOS.ehr.ehrState.encounter.putChartRetrievalRequest()
+    window: 1 minute
+    limit: 10
+    source: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+    note: Documented as a DANGER callout - "You can send no more than 10 requests per minute."
+unlimited:
+  - operation: POST /oauth/token
+    note: >-
+      The token endpoint declares no 429 response and no published limit; do not
+      assume it is unlimited, only that Vim publishes no number for it.
+notes: >-
+  The Vim Data Source API (openapi/vim-data-source-openapi-original.json) is
+  customer-hosted, so Vim publishes no rate limits for it - the limits above
+  apply to Vim-hosted api.getvim.com/v1 and to the VimOS.js SDK trigger.

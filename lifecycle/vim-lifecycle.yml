@@ -1,24 +1,85 @@
-generated: '2026-07-24'
+generated: '2026-08-15'
 method: searched
 source:
   - https://status.getvim.com
+  - https://docs.getvim.com/change-log/
   - https://docs.getvim.com/vim-os-js/setting-up
+  - openapi/vim-rest-api-openapi-original.json
   - openapi/vim-data-source-openapi-original.json
 versioning:
   rest:
+    scheme: path-prefix
+    current: v1
+    base_url: https://api.getvim.com/v1
+    note: >-
+      The Vim-hosted REST API is served under /v1; info.version in the spec is
+      1.0.0. Only one version has ever been published.
+  data_source:
     scheme: none-in-path
-    note: Data Source REST paths carry no version segment.
+    note: >-
+      Data Source REST paths carry no version segment; the surface is
+      customer-hosted.
   sdk:
     scheme: semver
+    current: 2.0.20
     current_major: 2.x
-    docs_majors: [1.x.x, 2.x.x]
-    note: VimOS.js browser SDK (vim-os-js-browser) latest 2.0.20; docs published per major.
+    docs_majors: [0.0.x, 1.x.x, 2.x.x]
+    distribution_pinning:
+      npm: pinned by the consumer (package.json)
+      cdn: >-
+        UNPINNED - the script tag path is the major track
+        /vim-os-sdk/v2.x.x/vim-sdk.js, so script-tag consumers float to the
+        latest 2.x build. See packages/vim-packages.yml.
+change_management:
+  changelog: https://docs.getvim.com/change-log/
+  artifact: changelog/vim-changelog.yml
+  scope: VimOS.js SDK only - the REST API has no changelog.
+  breaking_change_policy:
+    published: true
+    url: https://docs.getvim.com/change-log/
+    statement: >-
+      "Breaking changes will only be released in future versions. This ensures
+      that as long as you don't upgrade the major version of the npm package you
+      are using or change the URL of the script tag, your application will not
+      break."
+    applies_to: VimOS.js SDK
+    note: >-
+      This is a forward-compatibility commitment, NOT a deprecation policy - it
+      says new majors carry the breaks, but never states how long an old major
+      is supported or how removal is announced.
+  silent_change_surface:
+    note: >-
+      Vim states plainly that bug fixes and some non-breaking features are
+      deployed to the latest VimOS code and picked up automatically by BOTH the
+      script tag and the npm package, and that most such fixes are never listed
+      on the changelog. A published changelog entry may also be amended later
+      when a new feature ships against that version. Consumers therefore cannot
+      reconstruct the running behaviour from the version number alone.
 deprecation:
   policy_url: null
+  policy_published: false
   sunset_header: false
-  note: No published deprecation/sunset policy found; SDK 1.x docs remain available alongside 2.x.
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    No deprecation or sunset policy, no support window, and no RFC 8594
+    Sunset/Deprecation headers on either surface. SDK 0.0.x and 1.x.x docs
+    remain published alongside 2.x with no end-of-life date attached, so an
+    integrator on an old major has no published signal telling them to move.
 sla:
   url: null
   uptime_target: null
-status_page: https://status.getvim.com
+  published: false
+status_page:
+  url: https://status.getvim.com
+  status: 200
+  checked: '2026-08-15'
+support:
+  url: https://getvim.com/contact-us/
+  note: >-
+    No public developer support portal, community forum or ticketing system;
+    developer-facing escalation in the docs is by email to the Vim team.
 deprecated_operations: []
+notes: >-
+  Neither OpenAPI marks any operation deprecated: true, and no operation in
+  either spec carries a sunset date.

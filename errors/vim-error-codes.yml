@@ -1,0 +1,140 @@
+generated: '2026-08-15'
+method: derived
+source:
+  - openapi/vim-rest-api-openapi-original.json
+  - https://docs.getvim.com/api
+# Named error-code registry for the Vim-hosted REST API (api.getvim.com/v1).
+# The companion file errors/vim-problem-types.yml covers the customer-hosted
+# Vim Data Source API, which uses a DIFFERENT envelope. Vim publishes no
+# standalone error-reference page; these codes are enumerated in the OpenAPI
+# response schemas that back docs.getvim.com/api.
+format: custom
+rfc9457: false
+surface: https://api.getvim.com/v1
+envelopes:
+  - id: nest-style
+    shape:
+      statusCode: number
+      timestamp: string (date-time)
+      errorCode: string
+      message: string | string[]
+    used_by:
+      - POST /invitations (400, 409)
+    note: The only envelope carrying a machine-readable errorCode.
+  - id: status-error-message
+    shape:
+      statusCode: number
+      error: string
+      message: string
+    used_by:
+      - GET /appointments/{vimOrganizationId} (400, 403, 429, 500)
+      - GET /chart-retrieval/download-url/{requestId} (400, 500)
+    note: >-
+      error carries an UPPER_SNAKE label (FORBIDDEN, TOO_MANY_REQUESTS,
+      INTERNAL_SERVER_ERROR) but there is no enum, so it is not a stable code.
+  - id: bare-error-string
+    shape:
+      error: string
+    used_by:
+      - GET /applications/{applicationId}/organizations (400, 404, 500)
+      - GET /applications/{applicationId}/organizations/{organizationId}/users (500)
+    note: Human-readable text only; nothing machine-branchable.
+  - id: undocumented
+    shape: null
+    used_by:
+      - POST /oauth/token (400, 401)
+      - POST /invitations (401, 429)
+      - GET /applications/.../users (401, 403, 404, 429)
+      - GET /chart-retrieval/download-url/{requestId} (401, 403, 429)
+    note: >-
+      These responses declare a status and a description but NO schema and no
+      content type. A client cannot know what body to expect - the gap is
+      recorded, not filled in.
+error_codes:
+  - code: SCHEMA_VALIDATION_FAILED
+    status: 400
+    operation: POST /invitations
+    meaning: The invitation request body failed schema validation.
+    action: >-
+      Fix the payload against CreateInvitationDto; message may be an array of
+      per-field validation strings. Do not retry unchanged.
+    retryable: false
+  - code: UNAUTHORIZED_APPLICATION_ID
+    status: 400
+    operation: POST /invitations
+    meaning: >-
+      The applicationId in the invitation context is not one this client is
+      authorized to invite users into.
+    action: Verify the application belongs to the authenticated Vim account.
+    retryable: false
+  - code: INVALID_EHR_URL
+    status: 400
+    operation: POST /invitations
+    meaning: The supplied EHR URL is malformed or not accepted.
+    action: Correct the EHR URL in setupData.
+    retryable: false
+  - code: INVALID_EHR_URL_FOR_EHR_TYPE
+    status: 400
+    operation: POST /invitations
+    meaning: The EHR URL does not match the shape expected for the declared EHR type.
+    action: Reconcile the EHR type and its URL format before retrying.
+    retryable: false
+  - code: DUPLICATE_ORGANIZATION_NAME
+    status: 409
+    operation: POST /invitations
+    meaning: An organization with this name already exists in Vim.
+    action: >-
+      Treat as already-created rather than as failure - POST /invitations is not
+      idempotent, so a retry after a partial success surfaces here. Reconcile
+      before creating a second organization.
+    retryable: false
+  - code: DUPLICATE_ORGANIZATION_EHR_URL
+    status: 409
+    operation: POST /invitations
+    meaning: An organization is already registered against this EHR URL.
+    action: Look up the existing organization instead of creating a new one.
+    retryable: false
+  - code: DUPLICATE_USER_EMAIL
+    status: 409
+    operation: POST /invitations
+    meaning: A Vim user already exists with this email address.
+    action: Invite the existing user, or reconcile the account, rather than retrying.
+    retryable: false
+status_classes:
+  - status: 400
+    title: Bad request
+    note: Missing/invalid parameters, or a malformed body. Never retry unchanged.
+  - status: 401
+    title: Unauthorized
+    note: >-
+      Missing, invalid or expired bearer token, or bad client credentials on the
+      token endpoint. Re-obtain a token from POST /oauth/token and retry once.
+  - status: 403
+    title: Forbidden
+    note: >-
+      Authenticated but not permitted - typically the application is not
+      installed in the target organization. Not retryable.
+  - status: 404
+    title: Not found
+    note: Unknown applicationId or organizationId.
+  - status: 409
+    title: Conflict
+    note: Unique-field collision on invitation creation. See error_codes above.
+  - status: 429
+    title: Too many requests
+    note: >-
+      Rate limit exceeded. No Retry-After header is documented; back off against
+      the published per-operation limit (10 or 50 per minute). See
+      rate-limits/vim-rate-limits.yml.
+  - status: 500
+    title: Internal server error
+    note: Server-side failure, including presigned-URL generation failures on chart retrieval.
+gaps:
+  - >-
+    Three different error envelopes across six operations, and 13 declared error
+    responses carry no schema at all.
+  - >-
+    Only POST /invitations exposes an enumerated errorCode; every other
+    operation returns free text, so cross-operation error handling cannot be
+    written against a stable code.
+  - No published error-reference page outside the API reference itself.

@@ -1,10 +1,24 @@
-generated: '2026-07-24'
-method: derived
-source: openapi/vim-data-source-openapi-original.json
-# Cross-cutting request/response semantics for the Vim Data Source API.
-# Derived from the OpenAPI; the Data Source is customer-hosted (each customer
-# exposes the endpoints at their own host per the server template
-# https://{environment}-{customerName}.com).
+generated: '2026-08-15'
+method: searched
+source:
+  - https://docs.getvim.com/api
+  - https://docs.getvim.com/change-log/
+  - https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+  - openapi/vim-rest-api-openapi-original.json
+  - openapi/vim-data-source-openapi-original.json
+# Cross-cutting request/response semantics across BOTH Vim REST surfaces:
+#   1. Vim REST API   - Vim-hosted at https://api.getvim.com/v1
+#   2. Vim Data Source - CUSTOMER-hosted; each customer exposes the endpoints at
+#      their own host per the server template https://{environment}-{customerName}.com
+surfaces:
+  vim_rest_api:
+    base_url: https://api.getvim.com/v1
+    hosted_by: Vim
+    spec: openapi/vim-rest-api-openapi-original.json
+  vim_data_source:
+    base_url: 'https://{environment}-{customerName}.com'
+    hosted_by: customer
+    spec: openapi/vim-data-source-openapi-original.json
 authentication:
   style: oauth2-client-credentials
   token_endpoint: /oauth/token
@@ -13,45 +27,134 @@ authentication:
   token_type: Bearer
   token_format: JWT
   token_ttl_seconds: 3600
-  header: "Authorization: Bearer <access_token>"
-  note: All resource operations require the bearer token issued by POST /oauth/token.
+  header: 'Authorization: Bearer <access_token>'
+  note: >-
+    Identical on both surfaces. All resource operations require the bearer token
+    issued by POST /oauth/token.
   see: authentication/vim-authentication.yml
 content_type:
   request: application/json
   response: application/json
+  exception: >-
+    GET /chart-retrieval/download-url returns JSON containing a presigned URL;
+    the URL itself resolves to a password-protected application/zip payload.
 idempotency:
   supported: false
+  header: null
   note: >-
-    No idempotency-key header or parameter is documented in the OpenAPI. Write
-    operations (patient/identify, insights/feedback) are keyed by stable
-    patient_id and per-gap/insight id supplied in the payload rather than a
-    request idempotency key.
+    Neither surface documents an Idempotency-Key header, request-id dedupe
+    parameter, or replay window. POST /invitations is the highest-risk
+    non-idempotent operation - it creates an account AND an organization and
+    returns a single-use invitation URL; a retried call is guarded only by a 409
+    on already-taken unique fields, so a caller must treat 409 as "already
+    created" rather than as a hard failure. Data Source writes
+    (patient/identify, insights/feedback) are keyed by the caller-supplied
+    stable patient_id and per-gap/insight id, which gives natural dedupe on
+    those two paths only.
 pagination:
+  supported: partial
+  style: offset-limit
+  applies_to:
+    - GET /appointments/{vimOrganizationId}
+  params:
+    offset:
+      in: query
+      default: 0
+      description: Starting point of the data to retrieve.
+    limit:
+      in: query
+      default: 50
+      maximum: 50
+      description: Number of records to retrieve.
+  response_fields:
+    total_count: undocumented
+    next_cursor: null
+    note: >-
+      Vim documents no total/has-more field. A client walks pages by advancing
+      offset until a short page is returned - offset=0&limit=50, then
+      offset=50&limit=50, and so on.
+  not_paginated: >-
+    Every other operation on both surfaces returns a single object or an inline
+    array with no cursor or offset.
+field_expansion:
   supported: false
-  note: >-
-    All endpoints operate on a single patient per request; insights are returned
-    as an inline array with no cursor/offset paging.
+sparse_fieldsets:
+  supported: false
+metadata:
+  supported: false
+  note: No customer-defined metadata/annotation field on any resource.
 versioning:
-  scheme: none-in-path
-  note: >-
-    The Data Source REST paths carry no version segment. The companion VimOS.js
-    browser SDK is versioned with semver (see changelog/packages); docs are
-    published per major (1.x.x).
+  rest:
+    scheme: path-prefix
+    current: v1
+    note: >-
+      The Vim REST API is served under /v1 on api.getvim.com. The Data Source
+      paths carry no version segment (customer-hosted).
+  sdk:
+    scheme: semver
+    current: 2.0.20
+    tracks: [2.x.x, 1.x.x, 0.0.x]
+    breaking_change_policy: >-
+      Breaking changes ship only in a future major. Pinning the npm major or the
+      /v2.x.x/ script-tag path is documented as sufficient to avoid breakage.
+    see: changelog/vim-changelog.yml
 error_handling:
-  envelope: { code: string, reason: string }
-  media_type: application/json
+  envelopes:
+    - surface: vim_rest_api
+      shape: '{ statusCode: number, error: string, message: string }'
+      media_type: application/json
+    - surface: vim_data_source
+      shape: '{ code: string, reason: string }'
+      media_type: application/json
   rfc9457: false
+  note: >-
+    The two surfaces use DIFFERENT error envelopes. A client integrating both
+    must branch on surface, not on a shared error type.
   see: errors/vim-problem-types.yml
 request_tracing:
   request_id_header: null
-  note: No request-id/correlation header is documented.
+  correlation:
+    - field: requestId
+      scope: chart retrieval
+      note: >-
+        Not a transport-level trace id. requestId is a business identifier
+        returned by putChartRetrievalRequest(), echoed on the status webhook,
+        and passed back on the download-url call - the only correlation handle
+        Vim publishes.
+  note: No X-Request-Id / traceparent header is documented on either surface.
 rate_limiting:
-  documented: false
-  note: No rate-limit headers or quotas are documented in the OpenAPI.
-identifiers:
-  patient_id: Stable unique patient identifier returned by POST /patient/identify.
-  gap_id: A unique identifier per gap and per patient.
-  insight_id: A unique identifier per insight and per patient.
+  documented: true
+  signalling: status-code-only
+  status_on_exhaustion: 429
+  headers: none
   note: >-
-    Vim requires a stable unique patient ID and a stable unique identifier per
-    insight/gap across submissions.
+    Per-operation limits are published in prose (10 or 50 requests/minute) and
+    every limited operation declares a 429, but NO RateLimit-*/X-RateLimit-*/
+    Retry-After header is documented. An agent cannot read remaining quota; it
+    can only back off after a 429.
+  see: rate-limits/vim-rate-limits.yml
+identifiers:
+  applicationId: Vim application identifier; also the ZIP password on chart retrieval downloads.
+  vimOrganizationId: Vim unique identifier for a customer organization.
+  organizationKey: Vim unique key for an organization, returned on invitation creation.
+  userId: Vim unique user identifier.
+  requestId: Chart retrieval request identifier (correlates SDK call, webhook, download).
+  patient_id: Stable unique patient identifier returned by Data Source POST /patient/identify.
+  gap_id: Data Source - unique identifier per gap and per patient.
+  insight_id: Data Source - unique identifier per insight and per patient.
+  note: >-
+    Vim requires the caller to supply a stable unique patient ID and a stable
+    unique identifier per insight/gap across submissions on the Data Source.
+geography:
+  constraint: >-
+    The Vim REST API is available only to application servers hosted within the
+    United States. Reading the docs or calling from outside the US requires a
+    VPN, but production application servers must be US-hosted.
+  source: https://docs.getvim.com/api
+data_freshness:
+  appointments: >-
+    Once-daily snapshot with up to 24 hours of lag; 10-day lookahead only. Not a
+    real-time EHR query.
+  chart_retrieval: >-
+    Asynchronous with a human review step, typically ~3 working days unless the
+    requester is explicitly trusted/approved in the Clinical Data Exchange app.

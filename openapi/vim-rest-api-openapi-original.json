@@ -1,0 +1,1343 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Vim REST API",
+    "version": "1.0.0",
+    "description": "The Vim REST API allows you to access various resources and services provided by Vim.\nThe API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.\nBefore calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.\n\n**Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim's EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.\n\nThese docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!"
+  },
+  "servers": [
+    {
+      "url": "https://api.getvim.com/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Access token": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Use this token in the Authorization header when calling any authenticated resource request"
+      }
+    },
+    "schemas": {
+      "CreateInvitationDto": {
+        "type": "object",
+        "properties": {
+          "invitationContexts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "applications"
+                  ],
+                  "example": "applications"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "list of [applications](https://console.getvim.com/organization-admin/applications) from your Vim account that will be added to the created user",
+                  "properties": {
+                    "applicationIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "applicationIds"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "data"
+              ]
+            }
+          },
+          "setupData": {
+            "type": "object",
+            "properties": {
+              "organization": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "ehrType": {
+                    "type": "string",
+                    "enum": [
+                      "athena",
+                      "ecw",
+                      "practice-fusion"
+                    ]
+                  },
+                  "ehrUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The unique URL of the EHR system used by the organization; For organizations using the `athena` EHR, the url must be a valid Athena url"
+                  },
+                  "tins": {
+                    "type": "array",
+                    "format": "TIN",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "firstName": {
+                        "type": "string"
+                      },
+                      "lastName": {
+                        "type": "string"
+                      },
+                      "ehrUserName": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "firstName",
+                      "lastName",
+                      "ehrUserName"
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "ehrType",
+                  "ehrUrl",
+                  "user"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "invitationContexts",
+          "setupData"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/oauth/token": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Obtain an access token",
+        "description": "Exchange your client credentials for an access token to be used when calling any authenticated resource request.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "client_id",
+                  "client_secret",
+                  "grant_type"
+                ],
+                "properties": {
+                  "client_id": {
+                    "type": "string",
+                    "description": "The client id connected to [your Vim account](https://console.getvim.com/organization-admin/my-account)"
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "The client secret connected to [your Vim account](https://console.getvim.com/organization-admin/my-account)"
+                  },
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "client_credentials"
+                    ],
+                    "example": "client_credentials"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "The access token to be used for authenticated resource requests"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "default": "Bearer",
+                      "description": "The type of token. See more [in the oauth docs](https://www.oauth.com/oauth2-servers/making-authenticated-requests/)"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "The number of seconds until the token expires"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Ensure you sent all the required parameters"
+          },
+          "401": {
+            "description": "Unauthorized; Ensure your client id and client secret are correct"
+          }
+        }
+      }
+    },
+    "/invitations": {
+      "post": {
+        "security": [
+          {
+            "Access token": []
+          }
+        ],
+        "tags": [
+          "Invitations"
+        ],
+        "summary": "Invite users to access your applications on Vim",
+        "description": "Invite users to access your applications on Vim.\nThe API creates an account and organization based on the provided data, activating the user under these entities.\nThe API returns an invitation URL that can be shared with the user for login and activation.\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.\nFor simplifying the testing of our API, you can import our <a download=\"vim-invitations-postman-collection.json\" href=\"/invitations-postman-collection.json\">invitations postman collection</a> into your <a href=\"https://www.postman.com/downloads/\" target=\"_blank\" rel=\"noopener noreferrer\">Postman installation</a>.\n<b>Rate limit:</b> You can send up to 10 requests per minute.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organization and user created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userInvitationUrl": {
+                      "type": "string",
+                      "description": "Link to the user invitation, where the user can set up their account",
+                      "format": "uri"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "The unique Vim id of the created user"
+                    },
+                    "organizationKey": {
+                      "type": "string",
+                      "description": "The unique Vim key of the created organization"
+                    },
+                    "organizationId": {
+                      "type": "string",
+                      "format": "integer",
+                      "description": "The unique Vim id of the created organization"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Some of the request parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        400
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "enum": [
+                        "SCHEMA_VALIDATION_FAILED",
+                        "UNAUTHORIZED_APPLICATION_ID",
+                        "INVALID_EHR_URL",
+                        "INVALID_EHR_URL_FOR_EHR_TYPE"
+                      ]
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "description": "detailed error message"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized; Ensure you are sending a valid access token"
+          },
+          "409": {
+            "description": "Conflict; Some unique fields are already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        409
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "enum": [
+                        "DUPLICATE_ORGANIZATION_NAME",
+                        "DUPLICATE_ORGANIZATION_EHR_URL",
+                        "DUPLICATE_USER_EMAIL"
+                      ]
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "description": "detailed error message"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests; You have exceeded the rate limit"
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/organizations": {
+      "get": {
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "The unique identifier of the application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123"
+          }
+        ],
+        "operationId": "getApplicationOrganizations",
+        "security": [
+          {
+            "Access token": []
+          }
+        ],
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Get Organizations by Application Id",
+        "description": "Retrieves a list of organizations that are using the specified application.</p>\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.\n<b>Rate limit:</b> You can send up to 10 requests per minute.",
+        "responses": {
+          "200": {
+            "description": "A list of organizations using the application.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "account": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 123
+                          }
+                        }
+                      },
+                      "identifiers": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 456
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Organization A"
+                          },
+                          "tins": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "example": [
+                              "111111111",
+                              "222222222"
+                            ]
+                          },
+                          "npi": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "1234567890"
+                          },
+                          "organizationKey": {
+                            "type": "string",
+                            "example": "aAbBcCdDeEfFgGhHiIjJkK"
+                          }
+                        }
+                      },
+                      "ehrInstance": {
+                        "type": "object",
+                        "properties": {
+                          "ehrUrl": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://ehr.example.com"
+                          },
+                          "ehrType": {
+                            "type": "string",
+                            "example": "ecw"
+                          }
+                        }
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "applications": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "example": [
+                              "app1",
+                              "app2"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing required parameter: applicationId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Application not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Application not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests; You have exceeded the rate limit"
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An unexpected error occurred. Please try again later."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/organizations/{organizationId}/users": {
+      "get": {
+        "summary": "Get all organization application users",
+        "tags": [
+          "Applications"
+        ],
+        "description": "Retrieves all users within the specified organization who are using the given application.\nThis API can be used to track new users created with the app across multiple organizations and monitor their status.\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.\n<b>Rate limit:</b> You can send up to 50 requests per minute.",
+        "security": [
+          {
+            "Access token": []
+          }
+        ],
+        "operationId": "getApplicationUsersForOrganization",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of users under the organization using the application.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "organization": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "identifiers": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "ehrUsername": {
+                            "type": "string"
+                          },
+                          "npi": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "roles": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "nullable": true
+                          },
+                          "authEmail": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "SSO identifier used to communicate between Vim and the application"
+                          }
+                        }
+                      },
+                      "demographics": {
+                        "type": "object",
+                        "properties": {
+                          "firstName": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "lastName": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        }
+                      },
+                      "contactInfo": {
+                        "type": "object",
+                        "properties": {
+                          "email": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "User email"
+                          }
+                        }
+                      },
+                      "activity": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "CREATED",
+                              "PENDING",
+                              "ACTIVATED",
+                              "LIVE",
+                              "INACTIVE",
+                              "FAILED_LOGIN",
+                              "OPTED_OUT"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "activatedAt": {
+                            "type": "string"
+                          },
+                          "lastLoginAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "lastFailedLoginAt": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Bearer token is required."
+          },
+          "403": {
+            "description": "Forbidden. Insufficient permissions."
+          },
+          "404": {
+            "description": "Application or organization not found."
+          },
+          "429": {
+            "description": "Too many requests; You have exceeded the rate limit"
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An unexpected error occurred. Please try again later."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/{vimOrganizationId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "vimOrganizationId",
+            "in": "path",
+            "description": "The Vim unique identifier for the organization. Vim constrains the available information; Vim shares information from organizations where your application is installed.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123456789"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "The starting point of the data to retrieve. Default is 0.",
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "The number of records to retrieve. Default is 50, with a maximum value of 50.",
+            "schema": {
+              "type": "integer",
+              "example": 50
+            }
+          }
+        ],
+        "operationId": "getFutureAppointments",
+        "security": [
+          {
+            "Access token": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Get future appointments data",
+        "description": "Appointments public api enables Canvas's app developers to get the clinic NPI's future appointments as a back end API request.\nThe endpoint returns scheduled appointments for the upcoming 10 days for Authorized Users within the customer organization which have your application installed.\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.<p><b>Rate limit:</b> You can send up to 50 requests per minute.<p><b>Pagination:</b> The API supports offset-based pagination to handle large datasets efficiently. The following parameters control pagination:</p><ul><li><b>offset</b> (optional): The starting point of the data to retrieve. Default is 0.</li><li><b>limit</b> (optional): The number of records to retrieve. Default is 50, with a maximum value of 50.</li></ul><p>This allows you to retrieve subsets of data in sequential requests. For example:</p><ul><li><code>offset=0&limit=50</code> retrieves the first 50 records.</li><li><code>offset=50&limit=50</code> retrieves the next 50 records.</li></ul></p><p>Vim allows developers to test the API without accessing live data. By using <code>vimOrganizationId = 123456789</code> in the API parameter, developers receive a predefined JSON response that simulates real appointment data but with de-identified data. Please note that you have to be authorized to use the service.</p><h3>How This API Works</h3><p>This API is <b>not</b> a real-time backend-to-backend EHR integration. It is a <b>daily snapshot</b> system — Vim syncs appointment data from the EHR once per day, and this endpoint serves that latest snapshot.</p><p><b>Daily sync flow:</b></p><ol><li>Once per day, Vim syncs appointments from the EHR for each provider with an NPI, covering the next 10 days.</li><li>The data is stored in Vim's backend.</li><li>This endpoint returns that stored snapshot — it does not query the EHR in real time.</li></ol><p><b>Supported EHRs:</b> ECW, Athena, and Sandbox EHR (for testing).</p><p><b>Key constraints:</b></p><ul><li><b>Not real-time:</b> Data is synced once daily. Expect up to a 24-hour lag for new appointments.</li><li><b>NPI required:</b> Only physicians with an NPI set in the EHR are included in the sync.</li><li><b>App must be initialized:</b> The app authentication flow must be completed for that user before any data is synced for them.</li><li><b>Physician must be logged in:</b> Vim Connect must be active during the daily sync window for that provider's data to be extracted.</li><li><b>Appointment timing matters:</b> Appointments added to the EHR after the daily sync has run won't appear until the following day.</li><li><b>Lookahead window:</b> Only the next 10 days of appointments are available.</li></ul>",
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "identifiers": {
+                            "type": "object",
+                            "required": [
+                              "vimAppointmentId"
+                            ],
+                            "properties": {
+                              "vimAppointmentId": {
+                                "type": "string",
+                                "description": "The Vim unique identifier for the appointment",
+                                "example": "550e8400-e29b-41d4-a716-446655440000"
+                              },
+                              "ehrAppointmentId": {
+                                "type": "string",
+                                "description": "The EHR unique identifier for the appointment",
+                                "example": "AP-20240315-0001"
+                              }
+                            }
+                          },
+                          "basicInformation": {
+                            "type": "object",
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "The current status of the appointment (e.g., confirmed, canceled)",
+                                "example": "confirmed"
+                              },
+                              "type": {
+                                "type": "string",
+                                "description": "The type of appointment (e.g., Annual, follow-up)",
+                                "example": "routine_checkup"
+                              },
+                              "facility": {
+                                "type": "object",
+                                "properties": {
+                                  "facilityEhrId": {
+                                    "type": "string",
+                                    "description": "The EHR unique identifier of the medical facility",
+                                    "example": "MIAMI_SPORTS_MED"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "The name of the medical facility where the appointment will take place",
+                                    "example": "Miami Sports Medicine Center"
+                                  }
+                                }
+                              },
+                              "time": {
+                                "type": "object",
+                                "required": [
+                                  "startTime",
+                                  "endTime",
+                                  "timeZone"
+                                ],
+                                "properties": {
+                                  "startTime": {
+                                    "type": "string",
+                                    "description": "Any additional notes or comments made by the provider or staff",
+                                    "format": "YYYY-MM-DD HH:MM:SS",
+                                    "example": "2023-03-15 09:00:00"
+                                  },
+                                  "endTime": {
+                                    "type": "string",
+                                    "description": "The scheduled end time of the appointment",
+                                    "format": "YYYY-MM-DD HH:MM:SS",
+                                    "example": "2023-03-15 09:30:00"
+                                  },
+                                  "timeZone": {
+                                    "type": "string",
+                                    "description": "The time zone in which the startTime and endTime",
+                                    "example": "UTC"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "patient": {
+                            "type": "object",
+                            "properties": {
+                              "identifiers": {
+                                "type": "object",
+                                "required": [
+                                  "vimPatientId"
+                                ],
+                                "properties": {
+                                  "vimPatientId": {
+                                    "type": "string",
+                                    "description": "The Vim unique identifier for the patient",
+                                    "example": "ab123456-c789-d22342432-d3482e9fb436"
+                                  },
+                                  "ehrPatientId": {
+                                    "type": "string",
+                                    "description": "The EHR unique identifier for the patient. \n This field also represents the MRN (Medical Record Number) on the EHR",
+                                    "example": "EHR1-1A2B"
+                                  },
+                                  "mrn": {
+                                    "type": "string",
+                                    "description": "The patient medical record number",
+                                    "example": "MED-2023-54321"
+                                  }
+                                }
+                              },
+                              "demographics": {
+                                "type": "object",
+                                "required": [
+                                  "firstName",
+                                  "lastName",
+                                  "dateOfBirth"
+                                ],
+                                "properties": {
+                                  "firstName": {
+                                    "type": "string",
+                                    "description": "The patient's primary given name",
+                                    "example": "Michael"
+                                  },
+                                  "lastName": {
+                                    "type": "string",
+                                    "description": "The patient's surname",
+                                    "example": "Johnson"
+                                  },
+                                  "middleName": {
+                                    "type": "string",
+                                    "description": "Additional given names",
+                                    "example": "Robert"
+                                  },
+                                  "dateOfBirth": {
+                                    "type": "string",
+                                    "description": "The patient's date of birth",
+                                    "format": "YYYY-MM-DD",
+                                    "example": "1987-06-24"
+                                  },
+                                  "gender": {
+                                    "type": "string",
+                                    "description": "The patient's gender",
+                                    "example": "male"
+                                  }
+                                }
+                              },
+                              "address": {
+                                "type": "object",
+                                "properties": {
+                                  "address1": {
+                                    "type": "string",
+                                    "description": "The patient's first address",
+                                    "example": "1234 Sunshine Boulevard"
+                                  },
+                                  "address2": {
+                                    "type": "string",
+                                    "description": "The patient's second address",
+                                    "example": "Suite 1"
+                                  },
+                                  "city": {
+                                    "type": "string",
+                                    "description": "The city where the patient's is located",
+                                    "example": "Miami"
+                                  },
+                                  "state": {
+                                    "type": "string",
+                                    "description": "The patient's state",
+                                    "example": "FL"
+                                  },
+                                  "zipCode": {
+                                    "type": "string",
+                                    "description": "The patient's zip code",
+                                    "example": "33101"
+                                  },
+                                  "fullAddress": {
+                                    "type": "string",
+                                    "description": "The complete address in one string",
+                                    "example": "1234 Sunshine Boulevard, Suite 1, Miami, FL 33101"
+                                  }
+                                }
+                              },
+                              "insurance": {
+                                "type": "object",
+                                "properties": {
+                                  "ehrInsurance": {
+                                    "type": "string",
+                                    "description": "The insurance information as represented in the EHR that may include the plan name, the insurer (payer) name and/or a combination of both.\nThe exact format and content may vary depending on the EHR and implementation",
+                                    "example": "Vim Choice Plus Gold - Sunrise Health Insurance"
+                                  },
+                                  "groupId": {
+                                    "type": "string",
+                                    "description": "The insurance group/employer plan identifier",
+                                    "example": "GRP-982341"
+                                  },
+                                  "payerId": {
+                                    "type": "string",
+                                    "description": "The unique identifier for the insurance payer",
+                                    "example": "12345"
+                                  },
+                                  "memberId": {
+                                    "type": "string",
+                                    "description": "The patient's member/subscriber identifier",
+                                    "example": "M123456789"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "appointmentProvider": {
+                            "type": "object",
+                            "required": [
+                              "npi"
+                            ],
+                            "properties": {
+                              "npi": {
+                                "type": "string",
+                                "description": "The provider's National Provider Identifier (NPI)",
+                                "format": "10 digit number",
+                                "example": "1234567890"
+                              },
+                              "ehrProviderId": {
+                                "type": "string",
+                                "description": "The provider unique id in the EHR",
+                                "example": "EHRPID-123"
+                              },
+                              "demographics": {
+                                "type": "object",
+                                "required": [
+                                  "firstName",
+                                  "lastName"
+                                ],
+                                "properties": {
+                                  "firstName": {
+                                    "type": "string",
+                                    "description": "The first name of the provider (e.g., 'Kristel')",
+                                    "example": "Sarah"
+                                  },
+                                  "lastName": {
+                                    "type": "string",
+                                    "description": "The last name of the provider (e.g., 'De Varona')",
+                                    "example": "Williams"
+                                  },
+                                  "middleName": {
+                                    "type": "string",
+                                    "description": "The middle name of the provider (if applicable)",
+                                    "example": "John"
+                                  }
+                                }
+                              },
+                              "facility": {
+                                "type": "object",
+                                "properties": {
+                                  "facilityEhrId": {
+                                    "type": "string",
+                                    "description": "The unique identifier of the facility in the EHR system",
+                                    "example": "MIAMI_HEALTH_CLINIC"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "The name of the facility where the provider works",
+                                    "example": "Miami Health Clinic"
+                                  },
+                                  "address": {
+                                    "type": "object",
+                                    "properties": {
+                                      "address1": {
+                                        "type": "string",
+                                        "description": "The facility's first address",
+                                        "example": "5678 Medical Drive"
+                                      },
+                                      "address2": {
+                                        "type": "string",
+                                        "description": "The facility's second address",
+                                        "example": "Suite 2"
+                                      },
+                                      "city": {
+                                        "type": "string",
+                                        "description": "The city where the facility is located",
+                                        "example": "Miami"
+                                      },
+                                      "state": {
+                                        "type": "string",
+                                        "description": "The state where the facility is located",
+                                        "example": "FL"
+                                      },
+                                      "zipCode": {
+                                        "type": "string",
+                                        "description": "The facility's zip code",
+                                        "example": "33102"
+                                      },
+                                      "fullAddress": {
+                                        "type": "string",
+                                        "description": "The complete address in one string",
+                                        "example": "5678 Medical Drive, Suite 2, Miami, FL 33102"
+                                      }
+                                    }
+                                  },
+                                  "contact_info": {
+                                    "type": "object",
+                                    "properties": {
+                                      "homePhoneNumber": {
+                                        "type": "string",
+                                        "description": "The facility's home phone number",
+                                        "example": "305-888-8888"
+                                      },
+                                      "faxNumber": {
+                                        "type": "string",
+                                        "description": "The facility's fax number",
+                                        "example": "305-888-7777"
+                                      },
+                                      "mobilePhoneNumber": {
+                                        "type": "string",
+                                        "description": "The facility's mobile phone number",
+                                        "example": "305-888-9999"
+                                      },
+                                      "email": {
+                                        "type": "string",
+                                        "description": "The facility's email address",
+                                        "example": "contact@miamiclinic.com"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "specialty": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "A list of the provider's specialties",
+                                "format": "e.g., 'Cardiology', 'Pediatrics'",
+                                "example": [
+                                  "Family Medicine"
+                                ]
+                              },
+                              "providerDegree": {
+                                "type": "string",
+                                "description": "The provider's degree",
+                                "format": "e.g., 'MD', 'DO', 'PhD'",
+                                "example": "MD"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "currentOffset": {
+                          "type": "integer",
+                          "description": "The current offset of the data retrieval",
+                          "example": 0
+                        },
+                        "nextOffset": {
+                          "type": "integer",
+                          "required": false,
+                          "description": "The next offset for data retrieval, if more data exists",
+                          "example": 50
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "The maximum number of records retrieved",
+                          "example": 50
+                        },
+                        "isFinished": {
+                          "type": "boolean",
+                          "description": "Indicates whether all data has been retrieved",
+                          "example": true
+                        }
+                      },
+                      "required": [
+                        "currentOffset",
+                        "limit",
+                        "isFinished"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Occurs when the provided organizationId is not in the correct format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        400
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Bad Request"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Invalid vimOrganizationId, should be a number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: Insufficient permissions to perform this action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        403
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "FORBIDDEN"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Forbidden resource"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded: Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        429
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "TOO_MANY_REQUESTS"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Rate limit exceeded: Too many requests"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An unexpected error occurred on the server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        500
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "INTERNAL_SERVER_ERROR"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Unexpected error occurred on the server"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chart-retrieval/download-url/{requestId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "The Vim unique identifier for the request.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "a1b2c3d4e5f6a7b8c9d0"
+          }
+        ],
+        "operationId": "getChartRetrievalDownloadURL",
+        "security": [
+          {
+            "Access token": []
+          }
+        ],
+        "tags": [
+          "Chart Retrieval"
+        ],
+        "summary": "Get download URL for chart retrieval request",
+        "description": "Retrieves a presigned URL to download the chart data for a specific request ID.\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.\n<b>ZIP File Structure:</b>\nThe downloaded file will be a password-protected ZIP archive with the following structure:\n- requestId.zip\n  - requestId.pdf\n  - requestId.json\n\n<b>ZIP Password:</b>\nThe ZIP file is password-protected using your applicationId as the password.\n<b>Rate limit:</b> You can send up to 50 requests per minute.<p>Vim allows developers to test the API without accessing live data.\nBy using <code>requestId = a1b2c3d4e5f6a7b8c9d0</code> in the API parameter, developers receive a password protected predefined ZIP file response that simulates real chart retrieval data but with de-identified data. \nZip's password is the <code>demo-app-id</code>. \nPlease note that you have to be authorized to use the service.</p>",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fileDownloadURL": {
+                      "type": "string",
+                      "description": "The presigned URL to download the chart data",
+                      "format": "uri",
+                      "example": "https://storage.example.com/charts/request123?signature=abc123"
+                    }
+                  },
+                  "required": [
+                    "fileDownloadURL"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Occurs when:\n- The provided requestId is invalid\n- The account-id is missing from the request\n- The request parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        400
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Bad Request"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message indicating the specific issue",
+                      "examples": [
+                        "Invalid request-id",
+                        "Missing account-id",
+                        "Invalid request parameters"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Bearer token is required."
+          },
+          "403": {
+            "description": "Forbidden. Insufficient permissions."
+          },
+          "429": {
+            "description": "Rate limit exceeded: Too many requests"
+          },
+          "500": {
+            "description": "Internal server error. Failed to create presigned URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "enum": [
+                        500
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "INTERNAL_SERVER_ERROR"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Failed to create presigned url for request-id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

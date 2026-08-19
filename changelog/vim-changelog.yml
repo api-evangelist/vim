@@ -1,0 +1,106 @@
+generated: '2026-08-15'
+method: searched
+source: https://docs.getvim.com/change-log/
+url: https://docs.getvim.com/change-log/
+# Vim publishes a dated, versioned changelog for the VimOS.js SDK. Entries are
+# labelled with both the SDK major track (2.x.x) and the exact npm version, and
+# each item is tagged by Vim as "new feature", "enhancement", "beta" and/or
+# "Breaking change". The Vim REST API (api.getvim.com/v1) has NO separate
+# changelog - only the SDK surface is versioned publicly.
+scheme: semver
+scope: VimOS.js SDK (vim-os-js-browser) - REST API changes are not logged
+current_version: 2.0.20
+current_track: 2.x.x
+tracks_documented:
+  - 2.x.x
+  - 1.x.x
+  - 0.0.x
+policy:
+  bug_fixes: >-
+    Deployed to the latest VimOS code and picked up automatically by both the
+    script tag and the npm package; most are NOT listed in the changelog.
+  new_features: >-
+    Non-breaking features land in the current latest version and are picked up
+    automatically; features introducing new TypeScript types require an npm
+    upgrade. A published entry may therefore be amended later.
+  breaking_changes: >-
+    Released only in a future major. Pinning the npm major, or the /v2.x.x/
+    script-tag URL, is documented as sufficient to avoid breakage.
+  source: https://docs.getvim.com/change-log/
+entries:
+  - version: 2.0.20
+    track: 2.x.x
+    date: '2026-03-10'
+    npm_published: '2026-03-12'
+    breaking: true
+    highlights:
+      - >-
+        BREAKING - autoPopup() and pushNotification.show() now return
+        Promise<TriggerResult> instead of void, carrying status (sent | blocked
+        | failed), type (e.g. rate_limited, not_allowed_by_manifest) and
+        description. pushNotification.show() no longer throws when disallowed by
+        manifest; it resolves with { status: 'blocked' }.
+      - >-
+        New vimOS.hub.capabilities.pushNotifications and .autoPopup expose
+        { enabled, reason? } so an app can check availability before calling.
+  - version: 2.0.19
+    track: 2.x.x
+    date: '2026-02-03'
+    npm_published: '2026-02-09'
+    breaking: false
+    highlights:
+      - >-
+        Order resource gains a reason field in basicInformation and a loincCodes
+        array (code + optional description) for LAB, DI and PROCEDURE order
+        types (not RX). Beta; EHR-dependent.
+  - version: 2.0.18
+    track: 2.x.x
+    date: '2025-12-08'
+    npm_published: '2025-12-09'
+    breaking: false
+    highlights:
+      - Encounter.basicInformation gains a boolean selfPay field. EHR-dependent.
+  - version: 2.0.17
+    track: 2.x.x
+    date: '2025-11-12'
+    npm_published: '2025-11-13'
+    breaking: false
+    highlights:
+      - Provider gains a type field ('PROVIDER' | 'FACILITY').
+      - Diagnosis code objects gain an optional note field (beta).
+      - Order basicInformation gains notes and orderName for LAB and DI (beta).
+      - New diagnosisCodesNotes writeback in the encounter update capabilities (beta).
+      - Order gains targetProvider (DI orders, specific EHRs only; beta).
+      - New updateOrder writeback function for order notes and target provider (beta).
+  - version: 2.0.16
+    track: 2.x.x
+    date: '2025-10-20'
+    npm_published: '2025-10-20'
+    breaking: false
+    highlights:
+      - >-
+        SDK bundle format changed from UMD to IIFE; file renamed vim-sdk.umd.js
+        to vim-sdk.js. Script-tag integrators must update the src URL; npm
+        integrators pick it up on upgrade.
+  - version: 2.0.14
+    track: 2.x.x
+    date: '2025-09-30'
+    npm_published: null
+    breaking: false
+    highlights:
+      - >-
+        New patient.getLabResults() and patient.getVitals() return lab results
+        and vitals for a selected time period (beta, EHR-dependent).
+  - version: 2.0.13
+    track: 2.x.x
+    date: '2025-09-17'
+    npm_published: null
+    breaking: false
+    highlights:
+      - >-
+        New patient.getMedicationList() and patient.getAllergyList(); expanded
+        getProblemList() response (beta, EHR-dependent).
+window:
+  note: >-
+    Recent window only - the seven most recent 2.x.x entries. Vim's changelog
+    also carries full 1.x.x and 0.0.x histories at the same URL.

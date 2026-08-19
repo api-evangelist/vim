@@ -1,0 +1,38 @@
+generated: '2026-08-15'
+method: searched
+source:
+  - https://getvim.com/page-sitemap.xml
+  - https://getvim.com/contact-us/
+  - https://docs.getvim.com/platform/platform
+# Vim publishes NO pricing page and NO plans. The full page sitemap for
+# getvim.com carries 25 URLs and contains no /pricing, /plans or /packages
+# entry; the commercial path is a contact form, and developer access to Vim
+# Canvas is provisioned by Vim rather than purchased. This is an honest zero,
+# recorded rather than omitted.
+plan_count: 0
+pricing_published: false
+pricing_url: null
+model: enterprise-contract
+sales_motion: contact-sales
+onboarding: >-
+  Vim provisions a Vim Canvas developer account; the Account Admin receives an
+  email invitation to console.getvim.com. There is no public self-signup, no
+  free tier and no published trial.
+buyers:
+  - Health plans / payers
+  - Provider organizations and provider networks
+  - Digital-health application developers building on Vim Canvas
+contact:
+  url: https://getvim.com/contact-us/
+  status: 200
+evidence:
+  - url: https://getvim.com/page-sitemap.xml
+    status: 200
+    finding: 25 page URLs, none matching pricing/plans/packages.
+  - url: https://getvim.com/contact-us/
+    status: 200
+    finding: Contact form is the only published commercial entry point.
+notes: >-
+  Marketplace listings inside Vim Connect are distributed to clinics through
+  Vim's own store; Vim publishes no developer-facing rate card, revenue share or
+  usage price for that channel either.

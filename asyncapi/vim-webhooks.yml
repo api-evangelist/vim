@@ -1,0 +1,64 @@
+generated: '2026-08-15'
+method: searched
+source: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+# Vim publishes NO AsyncAPI document and NO event/streaming catalog. It does
+# document exactly one real webhook: an application-registered HTTPS callback
+# that receives status updates for chart retrieval requests initiated through
+# the VimOS.js SDK. Captured here as a webhook catalog rather than fabricating
+# an AsyncAPI spec for a one-event surface.
+asyncapi_published: false
+webhooks_published: true
+webhook_count: 1
+delivery:
+  direction: vim-to-consumer
+  transport: HTTPS POST callback
+  endpoint_configuration: >-
+    The consumer configures its own webhook URL in the Vim application manifest
+    (Vim Console), under EHR workflow resources -> Encounter workflow. Vim
+    requires a publicly accessible HTTPS endpoint - HTTP, localhost and private
+    network addresses are rejected.
+  authentication:
+    documented: false
+    note: >-
+      Vim documents no signing secret, HMAC signature header, mTLS or replay
+      protection for webhook deliveries. Treat payload authenticity as
+      unverified until confirmed with Vim.
+  retries:
+    documented: false
+  ordering:
+    documented: false
+webhooks:
+  - id: chart-retrieval-status
+    name: Chart retrieval request status update
+    trigger: >-
+      Emitted after an application calls
+      vimOS.ehr.ehrState.encounter.putChartRetrievalRequest() on a locked
+      encounter, as the export request moves through review and generation.
+    prerequisite_permission: put-chart-retrieval-request (application manifest, Encounter workflow)
+    payload_schema:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: Correlates with the requestId returned by putChartRetrievalRequest().
+        status:
+          type: string
+          enum: [Rejected, No data, Completed, Failed, Expired]
+      required: [requestId, status]
+    example:
+      requestId: a23ac79ce76695ff636efd811be2784c
+      status: No data
+    follow_up:
+      on_status: Completed
+      action: >-
+        GET /chart-retrieval/download-url/{requestId} on api.getvim.com/v1 using
+        the same requestId to obtain a presigned download URL for the
+        password-protected ZIP (password = your applicationId).
+      operationId: getChartRetrievalDownloadURL
+      spec: openapi/vim-rest-api-openapi-original.json
+    source: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
+notes: >-
+  The VimOS.js SDK also exposes in-EHR notification triggers (pushNotification,
+  autoPopup) and a session-context event stream inside the browser, but those
+  are client-side SDK callbacks within the Vim Connect overlay, not
+  server-to-server events, so they are not modelled as webhooks here.

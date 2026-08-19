@@ -1,0 +1,96 @@
+{
+	"info": {
+		"_postman_id": "f5d5dd2b-258b-4f7d-9a25-4d223362355c",
+		"name": "Vim Invitations API",
+		"description": "# 🚀 Get started here\n\nThis template guides you through Vim Invitations API operations\n\n#### **Step 1: Obtain an access token**\n\nUse [this request](https://galactic-resonance-895180.postman.co/workspace/My-Workspace~88a102d1-9a43-4051-8fef-7445298921e3/request/24884677-654890d9-34db-4322-93fb-dd7bc128d50c?action=share&source=copy-link&creator=24884677&ctx=documentation) to obtain an access token.\n\nMake sure to fill your client_id and client_secret body parameters.\n\nFor more info see [Vim API docs #obtain-token](https://docs.getvim.com/api/#post-oauth-token)\n\n#### **Step 2: Send the invitation**\n\nUse [this request](https://galactic-resonance-895180.postman.co/workspace/My-Workspace~88a102d1-9a43-4051-8fef-7445298921e3/request/24884677-e5999ef3-2f72-4c65-8e5a-a14f8b78f5d5?action=share&source=copy-link&creator=24884677&ctx=documentation) to send an invitation.\n\nMake sure to set the authorization header with the token obtainened from step 1 and fill the body parameters.\n\nFor more info see [Vim API docs #post-invitation](https://docs.getvim.com/api/#post-invitations)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "39417081",
+		"_collection_link": "https://galactic-resonance-895180.postman.co/workspace/My-Workspace~88a102d1-9a43-4051-8fef-7445298921e3/collection/24884677-f5d5dd2b-258b-4f7d-9a25-4d223362355c?action=share&source=collection_link&creator=39417081"
+	},
+	"item": [
+		{
+			"name": "Obtain an access token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"client_id\": \"string\",\n    \"client_secret\": \"string\",\n    \"grant_type\": \"client_credentials\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/oauth/token",
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Invite users to access your applications on Vim",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer Token"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"invitationContexts\": [\n    {\n      \"type\": \"applications\",\n      \"data\": {\n        \"applicationIds\": [\n          \"string\"\n        ]\n      }\n    }\n  ],\n  \"setupData\": {\n    \"organization\": {\n      \"name\": \"string\",\n      \"ehrType\": \"string\",\n      \"ehrUrl\": \"string\",\n      \"tins\": [\n        \"string\"\n      ],\n      \"user\": {\n        \"email\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"ehrUserName\": \"string\"\n      }\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/invitations",
+				"description": "Generated from cURL: curl -X POST \\\n'https://api.getvim.com/v1/invitations' \\\n -H \"authorization: Bearer Bearer Token\" \\\n -H \"Content-Type: application/json\" \\\n --data '{\n  \"invitationContexts\": [\n    {\n      \"type\": \"applications\",\n      \"data\": {\n        \"applicationIds\": [\n          \"string\"\n        ]\n      }\n    }\n  ],\n  \"setupData\": {\n    \"organization\": {\n      \"name\": \"string\",\n      \"ehrType\": \"string\",\n      \"ehrUrl\": \"string\",\n      \"tins\": [\n        \"string\"\n      ],\n      \"user\": {\n        \"email\": \"string\",\n        \"firstName\": \"string\",\n        \"lastName\": \"string\",\n        \"ehrUserName\": \"string\"\n      }\n    }\n  }\n}'"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.getvim.com/v1"
+		}
+	]
+}

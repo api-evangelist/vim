@@ -1,0 +1,82 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Vim REST API
+  version: 1.0.0
+extends: openapi/vim-rest-api-openapi-original.json
+x-provenance:
+  method: searched
+  captured: '2026-08-15'
+  source: https://docs.getvim.com/api
+  detail: >-
+    The Vim REST API OpenAPI 3.0.0 document is not served at a fetchable URL.
+    docs.getvim.com renders it with the vitepress-openapi plugin, which ships
+    the spec object inside the site's own JavaScript bundle
+    (https://docs.getvim.com/assets/chunks/theme.CrlzPUgN.js). The document
+    saved at openapi/vim-rest-api-openapi-original.json is that object exactly
+    as the provider's own docs consume it - openapi 3.0.0, info.title
+    "Vim REST API" 1.0.0, servers[0].url https://api.getvim.com/v1, which is the
+    identical host already recorded as apis[].baseURL. Ownership is
+    unambiguous: Vim's title, Vim's host, Vim's docs site.
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: vim
+      x-apievangelist-surface: rest-api
+      x-apievangelist-auth: oauth2-client-credentials (bearer JWT via POST /oauth/token)
+      x-apievangelist-error-envelope: '{ statusCode, error, message } (not RFC 9457)'
+      x-apievangelist-fhir: false
+      x-apievangelist-geography: US-hosted application servers only
+      x-apievangelist-rate-limits: rate-limits/vim-rate-limits.yml
+  - target: $.paths['/oauth/token'].post
+    update:
+      operationId: obtainAccessToken
+      x-apievangelist-note: >-
+        The provider's document leaves operationId unset on this operation; the
+        docs anchor it as post-oauth-token. Supplied here so agents and
+        generators have a stable handle. The original spec is not mutated.
+      x-apievangelist-consequence: read; exchanges client credentials for a 1-hour bearer JWT
+  - target: $.paths['/invitations'].post
+    update:
+      operationId: createInvitation
+      x-apievangelist-note: >-
+        operationId absent in the provider document; supplied by overlay only.
+      x-apievangelist-consequence: >-
+        write; creates a Vim account AND organization, activates the user, and
+        returns a shareable invitation URL. Not idempotent - 409 on unique-field
+        conflict is the only guard.
+      x-apievangelist-rate-limit: 10/minute
+      x-apievangelist-postman: collections/vim-invitations.postman_collection.json
+  - target: $.paths['/applications/{applicationId}/organizations'].get
+    update:
+      x-apievangelist-consequence: read; lists organizations that installed the application
+      x-apievangelist-rate-limit: 10/minute
+  - target: $.paths['/applications/{applicationId}/organizations/{organizationId}/users'].get
+    update:
+      x-apievangelist-consequence: read; lists application users within an organization
+      x-apievangelist-rate-limit: 50/minute
+  - target: $.paths['/appointments/{vimOrganizationId}'].get
+    update:
+      x-apievangelist-consequence: read; returns scheduled appointments (PHI-adjacent)
+      x-apievangelist-rate-limit: 50/minute
+      x-apievangelist-pagination: offset/limit, default limit 50, max 50
+      x-apievangelist-freshness: >-
+        Daily snapshot, not real-time. Vim syncs the next 10 days from the EHR
+        once per day; expect up to 24 hours of lag. Requires the physician to
+        have an NPI, the app to be initialised for that user, and Vim Connect to
+        be active during the sync window.
+      x-apievangelist-sandbox-id: vimOrganizationId=123456789 returns de-identified sample data
+  - target: $.paths['/chart-retrieval/download-url/{requestId}'].get
+    update:
+      x-apievangelist-consequence: >-
+        read; returns a presigned URL for a password-protected ZIP of clinical
+        chart data (PHI). ZIP password is the caller's applicationId.
+      x-apievangelist-rate-limit: 50/minute
+      x-apievangelist-initiated-by: >-
+        VimOS.js encounter.putChartRetrievalRequest(); completion arrives on the
+        consumer's webhook - see asyncapi/vim-webhooks.yml
+      x-apievangelist-sandbox-id: requestId=a1b2c3d4e5f6a7b8c9d0 (ZIP password demo-app-id)
+notes: >-
+  Non-destructive overlay capturing API Evangelist annotations. The original
+  spec at openapi/vim-rest-api-openapi-original.json is never mutated. Two of
+  the six operations ship without an operationId in the provider's own
+  document; that gap is recorded here rather than patched into the source.

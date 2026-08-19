@@ -4,14 +4,20 @@
 
 ## APIs
 - [Vim Canvas SDK (VimOS.js)](https://docs.getvim.com/vim-os-js/setting-up): JavaScript SDK to embed apps at the point of care; reads/writes EHR state.
-- [Vim Data Source API](https://data-docs.getvim.com/api-integration.html): OAuth2 client-credentials REST API to identify patients and push/fetch care insights and gaps.
-- [Vim Applications & Organizations API](https://docs.getvim.com/api): REST endpoints for organizations and users connected to an application.
-- [Vim Invitations API](https://docs.getvim.com/api): Invite users to access applications on Vim.
-- [Vim Appointments API](https://docs.getvim.com/api): Future appointment data (10-day lookahead) for an organization.
-- [Vim Chart Retrieval API](https://docs.getvim.com/api): Obtain a download URL for a chart-retrieval request.
+- [Vim Data Source API](https://data-docs.getvim.com/api-integration.html): OAuth2 client-credentials REST API to identify patients and push/fetch care insights and gaps. Customer-hosted.
+- [Vim REST API](https://docs.getvim.com/api): Vim-hosted at `https://api.getvim.com/v1` — invitations, applications/organizations, appointments, chart retrieval.
 
 ## Specs
-- [Data Source OpenAPI (3.0.0)](https://data-docs.getvim.com/openapi.json): 4 operations — token, patient identify, insights fetch, insights feedback.
+- [Data Source OpenAPI 3.0.0](https://data-docs.getvim.com/openapi.json): 4 operations — token, patient identify, insights fetch, insights feedback.
+- Vim REST API OpenAPI 3.0.0 — 6 operations across Authentication, Invitations, Applications, Appointments, Chart Retrieval. Rendered at https://docs.getvim.com/api; not served at a standalone URL (the spec ships inside the docs site bundle).
+
+## Operations reference (api.getvim.com/v1)
+- `POST /oauth/token` — exchange client credentials for a 1-hour bearer JWT. *(no operationId in spec)*
+- `POST /invitations` — create an account + organization and return an invitation URL. **Not idempotent.** 10 req/min. *(no operationId in spec)*
+- `getApplicationOrganizations` — `GET /applications/{applicationId}/organizations`. 10 req/min.
+- `getApplicationUsersForOrganization` — `GET /applications/{applicationId}/organizations/{organizationId}/users`. 50 req/min.
+- `getFutureAppointments` — `GET /appointments/{vimOrganizationId}`. 10-day lookahead, offset/limit pagination (max 50). Daily snapshot, up to 24h stale. 50 req/min.
+- `getChartRetrievalDownloadURL` — `GET /chart-retrieval/download-url/{requestId}`. Presigned URL to a password-protected ZIP (password = your applicationId). 50 req/min.
 
 ## Docs
 - [Developer Platform](https://docs.getvim.com/platform/platform)
@@ -19,16 +25,37 @@
 - [EHR Connectivity](https://docs.getvim.com/vim-os-js/vim-ehr-connectivity)
 - [Data Source Integration Docs](https://data-docs.getvim.com/general-information.html)
 - [API Reference](https://docs.getvim.com/api)
+- [Changelog](https://docs.getvim.com/change-log/)
+- [Testing & Sandbox EHR](https://docs.getvim.com/testing/managing-account)
 
 ## Auth
-- OAuth 2.0 client-credentials via Auth0 tenant auth.getvim.com; bearer JWT.
+- OAuth 2.0 client-credentials via Auth0 tenant auth.getvim.com; bearer JWT, 3600s TTL.
 - OIDC discovery: https://auth.getvim.com/.well-known/openid-configuration
+- Credentials are issued by Vim (Vim Console → My Account). No self-service signup.
+- **US-only:** application servers must be hosted in the United States.
+
+## Runtime semantics
+- Rate limits: 10 or 50 requests/minute per operation; 429 on exhaustion. **No RateLimit-*/Retry-After headers** — status code is the only runtime signal.
+- Idempotency: **not supported.** No Idempotency-Key on any operation.
+- Pagination: offset/limit on appointments only (default 50, max 50); no total or has-more field.
+- Errors: three different envelopes across six operations; only `POST /invitations` returns an enumerated `errorCode`. Not RFC 9457.
+- Webhooks: one — chart retrieval status (`{ requestId, status }`), delivered to a consumer-configured HTTPS URL. No signing secret documented.
+
+## Testing
+- Vim Sandbox EHR via the Vim Console (https://console.getvim.com).
+- Published sandbox identifiers: `vimOrganizationId = 123456789` (appointments), `requestId = a1b2c3d4e5f6a7b8c9d0` (chart retrieval, ZIP password `demo-app-id`).
+- [Invitations Postman collection](https://docs.getvim.com/invitations-postman-collection.json)
 
 ## Security & Compliance
 - HIPAA, SOC 2 Type II, HITRUST CSF — https://getvim.com/technology-security/
+- Compliance document portal (gated): https://compliance-self-service.getvim.com
 
 ## Packages
-- [vim-os-js-browser (npm)](https://www.npmjs.com/package/vim-os-js-browser): VimOS.js browser SDK.
+- [vim-os-js-browser (npm)](https://www.npmjs.com/package/vim-os-js-browser): VimOS.js browser SDK, 2.0.20 (2026-03-12).
+- CDN script tag (preferred by Vim, unpinned): `https://connect.getvim.com/vim-os-sdk/v2.x.x/vim-sdk.js`
+
+## Commercial
+- No published pricing or plans; enterprise contract via https://getvim.com/contact-us/
 
 ## Operations
 - [Status](https://status.getvim.com)
