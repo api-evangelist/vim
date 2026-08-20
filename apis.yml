@@ -40,6 +40,16 @@ tags:
 - Interoperability
 - Value-Based Care
 - Care Gaps
+- Authentication
+tags_raw:
+- Healthcare
+- United States
+- Clinical AI
+- EHR Integration
+- Point of Care
+- Interoperability
+- Value-Based Care
+- Care Gaps
 - OAuth
 created: '2026-07-24'
 modified: '2026-08-15'
@@ -73,6 +83,9 @@ apis:
   humanURL: https://docs.getvim.com/api
   baseURL: https://api.getvim.com/v1
   tags:
+  - Application
+  - Organization
+  tags_raw:
   - Applications
   - Organizations
   properties:
