@@ -58,11 +58,10 @@ apis:
 - aid: vim:vim-canvas-sdk
   name: Vim Canvas SDK (VimOS.js)
   description: >-
-    The Vim Canvas developer platform and VimOS.js JavaScript SDK for embedding
-    applications at the point of care. Reads EHR state (Patient, Encounter, Orders,
-    Referral, Claim, plus problem/medication/allergy/lab/vitals lists) and writes back to
-    Encounter, Referral, and Order resources through Vim Connect's EHR connectivity layer.
-    Proprietary SDK surface - not FHIR.
+    The Vim Canvas developer platform and VimOS.js JavaScript SDK for embedding applications at the point
+    of care. Reads EHR state (Patient, Encounter, Orders, Referral, Claim, plus problem/medication/allergy/lab/vitals
+    lists) and writes back to Encounter, Referral, and Order resources through Vim Connect's EHR connectivity
+    layer. Proprietary SDK surface - not FHIR.
   humanURL: https://docs.getvim.com/vim-os-js/setting-up
   tags:
   - EHR Integration
@@ -75,142 +74,348 @@ apis:
     url: https://docs.getvim.com/vim-os-js/vim-ehr-connectivity
   - type: GettingStarted
     url: https://docs.getvim.com/vim-os-js/setting-up
-- aid: vim:vim-applications-api
-  name: Vim Applications & Organizations API
-  description: >-
-    REST endpoints for retrieving the organizations connected to an application and the
-    users within an organization application. OAuth 2.0 client-credentials authenticated.
-  humanURL: https://docs.getvim.com/api
+- aid: vim:vim-access-token-retrieval-api
+  name: Vim Access Token Retrieval API
+  description: Obtaining a Bearer service token to make API requests
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
   baseURL: https://api.getvim.com/v1
   tags:
-  - Application
-  - Organization
-  tags_raw:
-  - Applications
-  - Organizations
+  - Access Token Retrieval
   properties:
+  - type: OpenAPI
+    url: openapi/vim-access-token-retrieval-api-openapi.yml
   - type: APIReference
     url: https://docs.getvim.com/api
   - type: Documentation
     url: https://docs.getvim.com/platform/platform
-  - type: OpenAPI
-    url: openapi/vim-rest-api-openapi-original.json
-  - type: Overlay
-    url: overlays/vim-rest-api-overlay.yaml
   - type: ErrorCatalog
     url: errors/vim-error-codes.yml
   - type: RateLimits
     url: rate-limits/vim-rate-limits.yml
   - type: OpenIDConfiguration
     url: well-known/vim-openid-configuration.json
-- aid: vim:vim-invitations-api
-  name: Vim Invitations API
-  description: >-
-    REST endpoint for inviting users to access applications on Vim. OAuth 2.0
-    client-credentials authenticated.
-  humanURL: https://docs.getvim.com/api
-  baseURL: https://api.getvim.com/v1
-  tags:
-  - Invitations
-  - User Management
-  properties:
-  - type: APIReference
-    url: https://docs.getvim.com/api
-  - type: OpenAPI
-    url: openapi/vim-rest-api-openapi-original.json
-  - type: Overlay
-    url: overlays/vim-rest-api-overlay.yaml
   - type: Postman
     url: https://docs.getvim.com/invitations-postman-collection.json
   - type: PostmanCollection
     url: collections/vim-invitations.postman_collection.json
-  - type: ErrorCatalog
-    url: errors/vim-error-codes.yml
-  - type: RateLimits
-    url: rate-limits/vim-rate-limits.yml
-  - type: OpenIDConfiguration
-    url: well-known/vim-openid-configuration.json
-- aid: vim:vim-appointments-api
-  name: Vim Appointments API
-  description: >-
-    REST endpoint returning future appointment data (a 10-day lookahead) for a Vim
-    organization. OAuth 2.0 client-credentials authenticated.
-  humanURL: https://docs.getvim.com/api
-  baseURL: https://api.getvim.com/v1
-  tags:
-  - Appointments
-  - Scheduling
-  properties:
-  - type: APIReference
-    url: https://docs.getvim.com/api
-  - type: OpenAPI
-    url: openapi/vim-rest-api-openapi-original.json
-  - type: Overlay
-    url: overlays/vim-rest-api-overlay.yaml
-  - type: ErrorCatalog
-    url: errors/vim-error-codes.yml
-  - type: RateLimits
-    url: rate-limits/vim-rate-limits.yml
   - type: Sandbox
     url: sandbox/vim-sandbox.yml
-  - type: OpenIDConfiguration
-    url: well-known/vim-openid-configuration.json
-- aid: vim:vim-chart-retrieval-api
-  name: Vim Chart Retrieval API
-  description: >-
-    REST endpoint for obtaining a download URL for a chart-retrieval request. OAuth 2.0
-    client-credentials authenticated.
-  humanURL: https://docs.getvim.com/api
-  baseURL: https://api.getvim.com/v1
-  tags:
-  - Chart Retrieval
-  - Clinical Data
-  properties:
-  - type: APIReference
-    url: https://docs.getvim.com/api
-  - type: OpenAPI
-    url: openapi/vim-rest-api-openapi-original.json
-  - type: Overlay
-    url: overlays/vim-rest-api-overlay.yaml
-  - type: ErrorCatalog
-    url: errors/vim-error-codes.yml
-  - type: RateLimits
-    url: rate-limits/vim-rate-limits.yml
   - type: Webhooks
     url: asyncapi/vim-webhooks.yml
-  - type: Sandbox
-    url: sandbox/vim-sandbox.yml
-  - type: OpenIDConfiguration
-    url: well-known/vim-openid-configuration.json
-- aid: vim:vim-data-source
-  name: Vim Data Source
-  description: >-
-    Ingestion surface for pushing patient-specific clinical insights and gaps (Diagnosis
-    Gaps, Risk, Quality, Social Determinants of Health) into Vim for surfacing at the
-    point of care, via either API or file-based connections. Requires a stable unique
-    patient ID and a stable unique identifier per insight/gap.
-  humanURL: https://data-docs.getvim.com/general-information.html
-  tags:
-  - Care Gaps
-  - Clinical Data
-  - Data Ingestion
-  properties:
   - type: Documentation
     url: https://data-docs.getvim.com/general-information.html
   - type: Documentation
     url: https://data-docs.getvim.com/api-integration.html
-  - type: OpenAPI
-    url: openapi/vim-data-source-openapi-original.json
-  - type: MCPServer
-    url: mcp/vim-mcp.yml
   - type: ToolCrosswalk
     url: mcp/vim-tool-crosswalk.yml
   - type: ErrorCatalog
     url: errors/vim-problem-types.yml
   - type: DataModel
     url: data-model/vim-data-model.yml
-  - type: Overlay
-    url: overlays/vim-data-source-overlay.yaml
+- aid: vim:vim-applications-api
+  name: Vim Applications API
+  description: The Applications API from Vim — 2 operation(s) for applications.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Applications
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-applications-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-appointments-api
+  name: Vim Appointments API
+  description: The Appointments API from Vim — 1 operation(s) for appointments.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Appointments
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-appointments-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-authentication-api
+  name: Vim Authentication API
+  description: The Authentication API from Vim — 1 operation(s) for authentication.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-authentication-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-chart-retrieval-api
+  name: Vim Chart Retrieval API
+  description: The Chart Retrieval API from Vim — 1 operation(s) for chart retrieval.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Chart Retrieval
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-chart-retrieval-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-get-patient-care-insights-api
+  name: Vim Get Patient Care Insights API
+  description: Retrieving patient care insights such as diagnosis gaps and care insights
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Get Patient Care Insights
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-get-patient-care-insights-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-invitations-api
+  name: Vim Invitations API
+  description: The Invitations API from Vim — 1 operation(s) for invitations.
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Invitations
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-invitations-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-patient-care-insights-feedback-api
+  name: Vim Patient Care Insights Feedback API
+  description: Sending feedback about the care insights
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Patient Care Insights Feedback
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-patient-care-insights-feedback-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
+- aid: vim:vim-patient-identification-api
+  name: Vim Patient Identification API
+  description: Identify the patient based on personal information
+  humanURL: https://docs.getvim.com/vim-os-js/setting-up
+  baseURL: https://api.getvim.com/v1
+  tags:
+  - Patient Identification
+  properties:
+  - type: OpenAPI
+    url: openapi/vim-patient-identification-api-openapi.yml
+  - type: APIReference
+    url: https://docs.getvim.com/api
+  - type: Documentation
+    url: https://docs.getvim.com/platform/platform
+  - type: ErrorCatalog
+    url: errors/vim-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/vim-rate-limits.yml
+  - type: OpenIDConfiguration
+    url: well-known/vim-openid-configuration.json
+  - type: Postman
+    url: https://docs.getvim.com/invitations-postman-collection.json
+  - type: PostmanCollection
+    url: collections/vim-invitations.postman_collection.json
+  - type: Sandbox
+    url: sandbox/vim-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/vim-webhooks.yml
+  - type: Documentation
+    url: https://data-docs.getvim.com/general-information.html
+  - type: Documentation
+    url: https://data-docs.getvim.com/api-integration.html
+  - type: ToolCrosswalk
+    url: mcp/vim-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/vim-problem-types.yml
+  - type: DataModel
+    url: data-model/vim-data-model.yml
 common:
 - type: OpenAPI
   url: openapi/vim-data-source-openapi-original.json
