@@ -20,5 +20,5 @@ edges:
   capability_name: Scheduling & Appointment Management
   confidence: 0.72
   evidence: GET /appointments/{vimOrganizationId}  getFutureAppointments  Get future appointments data
-  reason: Retrieval of future appointment data from provider organizations' EHRs supports appointment/scheduling
-    operations; read-only scope keeps confidence moderate.
+  reason: Retrieval of future patient appointment data for a provider organization sits in scheduling
+    and appointment management; single read-only operation so confidence is tempered.
