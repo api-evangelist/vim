@@ -17,6 +17,18 @@ description: >-
   SOC 2, and HITRUST certified. The platform is proprietary REST and SDK based; it is not
   an HL7 FHIR API and publishes no FHIR CapabilityStatement. The API is available only to
   application servers hosted within the United States.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: enterprise
   onboarding: partner
