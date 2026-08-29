@@ -429,6 +429,9 @@ apis:
   - type: DataModel
     url: data-model/vim-data-model.yml
 common:
+- type: CapabilityMap
+  url: capabilities/vim-capability-edges.yml
+  name: Vim Business Capability Map
 - type: OpenAPI
   url: openapi/vim-data-source-openapi-original.json
 - type: OpenAPI
