@@ -1,0 +1,424 @@
+openapi: 3.2.0
+info:
+  title: Vim Data Source API Integration Patient Care Insights Feedback API
+  description: API for managing patient insights
+  version: ''
+servers:
+- url: https://{environment}-{customerName}.com
+  description: Customer API server URL
+  variables:
+    environment:
+      default: api
+      description: Environment (e.g., api, staging, dev)
+    customerName:
+      default: example
+      description: Customer name
+security:
+- bearerAuth: []
+tags:
+- name: Patient Care Insights Feedback
+  description: Sending feedback about the care insights
+paths:
+  /insights/feedback:
+    post:
+      operationId: post-insights-feedback
+      tags:
+      - Patient Care Insights Feedback
+      summary: Sending feedback about the insight
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/DiagnosisGapFeedback'
+              - $ref: '#/components/schemas/InsightFeedback'
+              discriminator:
+                propertyName: data_type
+                mapping:
+                  diagnosis_gap: '#/components/schemas/DiagnosisGapFeedback'
+                  insight: '#/components/schemas/InsightFeedback'
+            examples:
+              diagnosisGap:
+                summary: Diagnosis Gap Feedback
+                x-collapsed: true
+                value:
+                  data_type: diagnosis_gap
+                  patient_id: d4fon0UkvtdfNBW1JfD5
+                  id: Ae3uywUB0YwdwxxdA4M5
+                  action:
+                    date: '2024-01-20'
+                    type: AGREE
+                    reason: Confirmed diagnosis
+                    notes: Patient records show this diagnosis
+                  organization:
+                    name: Test Medical Group
+                    vim_organization_key: test-medical-key-12345
+                  system: HCC
+                  type: KNOWN
+                  status: OPEN
+                  medical_codes:
+                  - system: ICD
+                    code: F32.9
+                    description: Major depressive disorder, single episode, unspecified
+              insight:
+                summary: Insight Feedback
+                x-collapsed: true
+                value:
+                  data_type: insight
+                  patient_id: d4fon0UkvtdfNBW1JfD5
+                  id: Bf4vywUB0YwdwxxdB5N6
+                  action:
+                    date: '2024-01-20'
+                    type: AGREE
+                    reason: Procedure completed
+                    notes: Screening was completed
+                  organization:
+                    name: Test Medical Group
+                    vim_organization_key: test-medical-key-12345
+                  title: Blood Pressure Check
+                  code: CBP
+                  category: QUALITY
+                  description: Annual blood pressure check
+                  type: HEDIS
+                  status: OPEN
+                  medical_codes:
+                  - system: CPT
+                    code: 3074F
+                    description: Most recent systolic BP less than 130 mm Hg
+        description: Feedback request details - schema varies based on data_type
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Authentication Bearer token to allow request to be processed
+      - name: Content-Type
+        in: header
+        required: true
+        schema:
+          type: string
+          default: application/json
+        description: Media type of the body of the request
+      responses:
+        '200':
+          description: Feedback updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+              examples:
+                success:
+                  summary: Success Response
+                  x-collapsed: true
+                  value:
+                    update_status: SUCCESS
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_INPUT
+                reason: The request is missing required parameters or contained invalid values
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: UNAUTHORIZED
+                reason: The provided authentication credentials are invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: FORBIDDEN
+                reason: You do not have permission to access this resource
+        '404':
+          description: Patient/path not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: PATIENT_NOT_FOUND
+                reason: No patient matching the provided identifier was found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: SERVER_ERROR
+                reason: An unexpected error occurred while processing the request
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
+    DiagnosisGapFeedback:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/FeedbackRequest'
+      - type: object
+        required:
+        - data_type
+        properties:
+          data_type:
+            type: string
+            enum:
+            - diagnosis_gap
+            description: Type of gaps data - diagnosis_gap
+          system:
+            type: string
+            description: The main gap system as displayed in the application.
+            enum:
+            - ICD
+            - HCC
+          code:
+            type: string
+            description: The original code provided by the customer, which corresponds to the selected code(s) by the user.
+          description:
+            type: string
+            description: The description of the gap selected by the user.
+          type:
+            type: string
+            description: Indication for a previously known diagnosis or a suspected diagnosis.
+            enum:
+            - KNOWN
+            - SUSPECTED
+          medical_codes:
+            type: array
+            items:
+              type: object
+              required:
+              - system
+              - code
+              properties:
+                system:
+                  type: string
+                  enum:
+                  - CPT
+                  - ICD
+                  default: ICD
+                  description: '[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided'
+                code:
+                  type: string
+                  description: '[CONDITIONAL] - The medical code - Required when system is provided'
+                description:
+                  type: string
+                  description: Description corresponding to the medical code
+            description: The medical code(s) selected by the user with their descriptions.
+    InsightFeedback:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/FeedbackRequest'
+      - type: object
+        required:
+        - data_type
+        properties:
+          data_type:
+            type: string
+            enum:
+            - insight
+            description: Type of data - insight
+          id:
+            type: string
+            description: A unique identifier per insight and per patient
+          title:
+            type: string
+            description: The name of the insight as it will be displayed in the application
+          code:
+            type: string
+            description: The insight code to present in the application next to the title
+          category:
+            type: string
+            description: The category of the insight (RISK/ QUALITY/ RX/ SDOH/ CCM/ UTILIZATION/ ADT/ CLINICAL INSIGHTS)
+            enum:
+            - RISK
+            - QUALITY
+            - RX
+            - SDOH
+            - CCM
+            - UTILIZATION
+            - ADT
+            - CLINICAL INSIGHTS
+          description:
+            type: string
+            description: Free-text explanation about the insight
+          type:
+            type: string
+            description: The type or program affiliation (e.g., HEDIS, ACO, STAR)
+          medical_codes:
+            type: array
+            items:
+              type: object
+              properties:
+                system:
+                  type: string
+                  enum:
+                  - CPT
+                  - ICD
+                  description: The system of the medical code (CPT/ ICD)
+                code:
+                  type: string
+                  description: The medical code
+                description:
+                  type: string
+                  description: Description corresponding to the medical code
+            description: Array of medical codes associated with the insight - each object contains a medical code, its system, and description.
+          status:
+            type: string
+            description: The status of the insight. An option to filter closed insights
+            enum:
+            - OPEN
+            - CLOSED
+          source:
+            type: string
+            description: The source of the insight
+          last_recorded:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+                description: Most recent date of a relevant service in yyyy-mm-dd format
+              provider:
+                type: object
+                properties:
+                  npi:
+                    type: string
+                    description: NPI of the most recent provider
+                  name:
+                    type: string
+                    description: Name of the most recent provider
+            description: Information about when and by whom the insight was last recorded
+          notes:
+            type: string
+            description: Additional information related to the insight
+    FeedbackRequest:
+      type: object
+      required:
+      - data_type
+      - patient_id
+      - id
+      - action
+      - organization
+      description: Base feedback request with common fields
+      properties:
+        data_type:
+          type: string
+          description: Type of gaps data - diagnosis_gap or insight
+          enum:
+          - diagnosis_gap
+          - insight
+        patient_id:
+          type: string
+          description: The unique ID of the patient
+        id:
+          type: string
+          description: The unique ID of the gap selected by the user
+        action:
+          type: object
+          required:
+          - date
+          - type
+          properties:
+            date:
+              type: string
+              format: date
+              description: The date when the action was taken in yyyy-mm-dd format, using the practice's timezone
+            type:
+              type: string
+              description: 'The reason of the reported action. Examples: AGREE, DISMISS'
+            reason:
+              type: string
+              description: The reason of the reported action.
+            notes:
+              type: string
+              description: The free text added by the user for the reported action.
+        organization:
+          type: object
+          required:
+          - name
+          - vim_organization_key
+          properties:
+            name:
+              type: string
+              description: The organization name associated with the user.
+            vim_organization_key:
+              type: string
+              description: The unique organization ID as available in the Vim system.
+        user:
+          type: object
+          properties:
+            first_name:
+              type: string
+              description: The user's first name.
+            last_name:
+              type: string
+              description: The user's last name.
+            npi:
+              type: string
+              description: The user's National Provider Identifier (NPI) (10 digits).
+            ehr_username:
+              type: string
+              description: The user's EHR username.
+        encounter:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The EHR encounter ID.
+            date:
+              type: string
+              format: date
+              description: The encounter date in yyyy-mm-dd format, using the practice's timezone
+    FeedbackResponse:
+      type: object
+      required:
+      - update_status
+      properties:
+        update_status:
+          type: string
+          default: SUCCESS
+          description: Status of the feedback update
+      example:
+        update_status: SUCCESS
+  securitySchemes:
+    service:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ''
+          scopes: {}
+      x-google-issuer: https://api.genairisk.dev.example.com/
+      x-google-audiences: test3,https://sage.health/,test4
+      x-google-jwks_uri: https://us-central1-clinicalnotesapp.cloudfunctions.net/getPublicCert
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer authentication token obtained from the /oauth/token endpoint
+      bearerFormat: JWT

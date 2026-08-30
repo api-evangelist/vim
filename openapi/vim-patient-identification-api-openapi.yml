@@ -1,0 +1,204 @@
+openapi: 3.2.0
+info:
+  title: Vim Data Source API Integration Patient Identification API
+  description: API for managing patient insights
+  version: ''
+servers:
+- url: https://{environment}-{customerName}.com
+  description: Customer API server URL
+  variables:
+    environment:
+      default: api
+      description: Environment (e.g., api, staging, dev)
+    customerName:
+      default: example
+      description: Customer name
+security:
+- bearerAuth: []
+tags:
+- name: Patient Identification
+  description: Identify the patient based on personal information
+paths:
+  /patient/identify:
+    post:
+      operationId: post-patient-identify
+      tags:
+      - Patient Identification
+      summary: Identify an Eligible Patient
+      description: 'Identifies a patient that is eligible to the service by their personal details information.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientDetails'
+            example:
+              first_name: John
+              last_name: Doe
+              dob: '1990-07-19'
+              member_id: '123445455'
+              ehr_id: a1b2c3d4
+              zip_code: '90210'
+              insurer: United Health Care
+              state: FL
+        description: Patient identification details
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Authentication Bearer token to allow request to be processed
+      - name: Content-Type
+        in: header
+        required: true
+        schema:
+          type: string
+          default: application/json
+        description: Media type of the body of the request
+      responses:
+        '200':
+          description: Successfully identified the patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentifyPatientResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_INPUT
+                reason: The request is missing required parameters or contained invalid values
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: UNAUTHORIZED
+                reason: The provided authentication credentials are invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: FORBIDDEN
+                reason: You do not have permission to access this resource
+        '404':
+          description: Patient/path not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: PATIENT_NOT_FOUND
+                reason: No patient matching the provided criteria was found in the system
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: SERVER_ERROR
+                reason: An unexpected error occurred while processing the request
+components:
+  schemas:
+    PatientDetails:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - dob
+      description: Patient identification details
+      properties:
+        first_name:
+          type: string
+          description: Patient's first name
+        last_name:
+          type: string
+          description: Patient's last name
+        dob:
+          type: string
+          format: date
+          description: Patient's date of birth in yyyy-mm-dd format
+        member_id:
+          type: string
+          description: '[CONDITIONAL] Patient''s member ID - Requirements based on the customer''s patient matching mechanism'
+        ehr_id:
+          type: string
+          description: '[CONDITIONAL] Patient''s EHR ID - Requirements based on the customer''s patient matching mechanism'
+        zip_code:
+          type: string
+          description: '[CONDITIONAL] Patient''s ZIP code - Requirements based on the customer''s patient matching mechanism'
+        insurer:
+          type: string
+          description: Patient's insurance provider
+        state:
+          type: string
+          description: Patient's state of residence
+      example:
+        first_name: John
+        last_name: Doe
+        dob: '1990-07-19'
+        member_id: '123445455'
+        ehr_id: a1b2c3d4
+        zip_code: '90210'
+        insurer: United Health Care
+        state: FL
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
+    IdentifyPatientResponse:
+      type: object
+      required:
+      - is_eligible
+      - patient_id
+      description: Response from patient identification
+      properties:
+        is_eligible:
+          type: boolean
+          description: Indicates if the patient is eligible for the service
+        patient_id:
+          type: string
+          description: Unique identifier for the patient
+      example:
+        is_eligible: true
+        patient_id: d4fon0UkvtdfNBW1JfD5
+  securitySchemes:
+    service:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ''
+          scopes: {}
+      x-google-issuer: https://api.genairisk.dev.example.com/
+      x-google-audiences: test3,https://sage.health/,test4
+      x-google-jwks_uri: https://us-central1-clinicalnotesapp.cloudfunctions.net/getPublicCert
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer authentication token obtained from the /oauth/token endpoint
+      bearerFormat: JWT

@@ -1,0 +1,266 @@
+openapi: 3.2.0
+info:
+  title: Vim REST Applications API
+  version: 1.0.0
+  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
+
+    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
+
+    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
+
+
+    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
+
+
+    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+servers:
+- url: https://api.getvim.com/v1
+tags:
+- name: Applications
+paths:
+  /applications/{applicationId}/organizations:
+    get:
+      parameters:
+      - name: applicationId
+        in: path
+        description: The unique identifier of the application.
+        required: true
+        schema:
+          type: string
+        example: '123'
+      operationId: getApplicationOrganizations
+      security:
+      - Access token: []
+      tags:
+      - Applications
+      summary: Get Organizations by Application Id
+      description: 'Retrieves a list of organizations that are using the specified application.</p>
+
+        For authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.
+
+        <b>Rate limit:</b> You can send up to 10 requests per minute.'
+      responses:
+        '200':
+          description: A list of organizations using the application.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 123
+                    identifiers:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 456
+                        name:
+                          type: string
+                          example: Organization A
+                        tins:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                          - '111111111'
+                          - '222222222'
+                        npi:
+                          type:
+                          - string
+                          - 'null'
+                          example: '1234567890'
+                        organizationKey:
+                          type: string
+                          example: aAbBcCdDeEfFgGhHiIjJkK
+                    ehrInstance:
+                      type: object
+                      properties:
+                        ehrUrl:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://ehr.example.com
+                        ehrType:
+                          type: string
+                          example: ecw
+                    data:
+                      type: object
+                      properties:
+                        applications:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                          - app1
+                          - app2
+        '400':
+          description: Missing required parameter.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Missing required parameter: applicationId'
+        '404':
+          description: Application not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Application not found
+        '429':
+          description: Too many requests; You have exceeded the rate limit
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: An unexpected error occurred. Please try again later.
+  /applications/{applicationId}/organizations/{organizationId}/users:
+    get:
+      summary: Get all organization application users
+      tags:
+      - Applications
+      description: 'Retrieves all users within the specified organization who are using the given application.
+
+        This API can be used to track new users created with the app across multiple organizations and monitor their status.
+
+        For authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.
+
+        <b>Rate limit:</b> You can send up to 50 requests per minute.'
+      security:
+      - Access token: []
+      operationId: getApplicationUsersForOrganization
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: A list of users under the organization using the application.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    organization:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                    identifiers:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        ehrUsername:
+                          type: string
+                        npi:
+                          type:
+                          - string
+                          - 'null'
+                        roles:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type: string
+                        authEmail:
+                          type:
+                          - string
+                          - 'null'
+                          description: SSO identifier used to communicate between Vim and the application
+                    demographics:
+                      type: object
+                      properties:
+                        firstName:
+                          type:
+                          - string
+                          - 'null'
+                        lastName:
+                          type:
+                          - string
+                          - 'null'
+                    contactInfo:
+                      type: object
+                      properties:
+                        email:
+                          type:
+                          - string
+                          - 'null'
+                          description: User email
+                    activity:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                          enum:
+                          - CREATED
+                          - PENDING
+                          - ACTIVATED
+                          - LIVE
+                          - INACTIVE
+                          - FAILED_LOGIN
+                          - OPTED_OUT
+                        createdAt:
+                          type: string
+                        activatedAt:
+                          type: string
+                        lastLoginAt:
+                          type:
+                          - string
+                          - 'null'
+                        lastFailedLoginAt:
+                          type:
+                          - string
+                          - 'null'
+        '401':
+          description: Unauthorized. Bearer token is required.
+        '403':
+          description: Forbidden. Insufficient permissions.
+        '404':
+          description: Application or organization not found.
+        '429':
+          description: Too many requests; You have exceeded the rate limit
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: An unexpected error occurred. Please try again later.
+components:
+  securitySchemes:
+    Access_token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use this token in the Authorization header when calling any authenticated resource request

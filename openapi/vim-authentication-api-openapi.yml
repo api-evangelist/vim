@@ -1,0 +1,76 @@
+openapi: 3.2.0
+info:
+  title: Vim REST Authentication API
+  version: 1.0.0
+  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
+
+    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
+
+    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
+
+
+    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
+
+
+    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+servers:
+- url: https://api.getvim.com/v1
+tags:
+- name: Authentication
+paths:
+  /oauth/token:
+    post:
+      tags:
+      - Authentication
+      summary: Obtain an access token
+      description: Exchange your client credentials for an access token to be used when calling any authenticated resource request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - client_id
+              - client_secret
+              - grant_type
+              properties:
+                client_id:
+                  type: string
+                  description: The client id connected to [your Vim account](https://console.getvim.com/organization-admin/my-account)
+                client_secret:
+                  type: string
+                  description: The client secret connected to [your Vim account](https://console.getvim.com/organization-admin/my-account)
+                grant_type:
+                  type: string
+                  enum:
+                  - client_credentials
+                  example: client_credentials
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: The access token to be used for authenticated resource requests
+                  token_type:
+                    type: string
+                    default: Bearer
+                    description: The type of token. See more [in the oauth docs](https://www.oauth.com/oauth2-servers/making-authenticated-requests/)
+                  expires_in:
+                    type: integer
+                    description: The number of seconds until the token expires
+        '400':
+          description: Bad request. Ensure you sent all the required parameters
+        '401':
+          description: Unauthorized; Ensure your client id and client secret are correct
+components:
+  securitySchemes:
+    Access_token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use this token in the Authorization header when calling any authenticated resource request

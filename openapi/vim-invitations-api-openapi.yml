@@ -1,0 +1,207 @@
+openapi: 3.2.0
+info:
+  title: Vim REST Invitations API
+  version: 1.0.0
+  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
+
+    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
+
+    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
+
+
+    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
+
+
+    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+servers:
+- url: https://api.getvim.com/v1
+tags:
+- name: Invitations
+paths:
+  /invitations:
+    post:
+      security:
+      - Access token: []
+      tags:
+      - Invitations
+      summary: Invite users to access your applications on Vim
+      description: 'Invite users to access your applications on Vim.
+
+        The API creates an account and organization based on the provided data, activating the user under these entities.
+
+        The API returns an invitation URL that can be shared with the user for login and activation.
+
+        For authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.
+
+        For simplifying the testing of our API, you can import our <a download="vim-invitations-postman-collection.json" href="/invitations-postman-collection.json">invitations postman collection</a> into your <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener noreferrer">Postman installation</a>.
+
+        <b>Rate limit:</b> You can send up to 10 requests per minute.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvitationDto'
+      responses:
+        '201':
+          description: Organization and user created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userInvitationUrl:
+                    type: string
+                    description: Link to the user invitation, where the user can set up their account
+                    format: uri
+                  userId:
+                    type: string
+                    description: The unique Vim id of the created user
+                  organizationKey:
+                    type: string
+                    description: The unique Vim key of the created organization
+                  organizationId:
+                    type: string
+                    format: integer
+                    description: The unique Vim id of the created organization
+        '400':
+          description: Bad request. Some of the request parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    enum:
+                    - 400
+                  timestamp:
+                    type: string
+                    format: date-time
+                  errorCode:
+                    type: string
+                    enum:
+                    - SCHEMA_VALIDATION_FAILED
+                    - UNAUTHORIZED_APPLICATION_ID
+                    - INVALID_EHR_URL
+                    - INVALID_EHR_URL_FOR_EHR_TYPE
+                  message:
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    description: detailed error message
+        '401':
+          description: Unauthorized; Ensure you are sending a valid access token
+        '409':
+          description: Conflict; Some unique fields are already taken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    enum:
+                    - 409
+                  timestamp:
+                    type: string
+                    format: date-time
+                  errorCode:
+                    type: string
+                    enum:
+                    - DUPLICATE_ORGANIZATION_NAME
+                    - DUPLICATE_ORGANIZATION_EHR_URL
+                    - DUPLICATE_USER_EMAIL
+                  message:
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    description: detailed error message
+        '429':
+          description: Too many requests; You have exceeded the rate limit
+components:
+  schemas:
+    CreateInvitationDto:
+      type: object
+      properties:
+        invitationContexts:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - applications
+                example: applications
+              data:
+                type: object
+                description: list of [applications](https://console.getvim.com/organization-admin/applications) from your Vim account that will be added to the created user
+                properties:
+                  applicationIds:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - applicationIds
+            required:
+            - type
+            - data
+        setupData:
+          type: object
+          properties:
+            organization:
+              type: object
+              properties:
+                name:
+                  type: string
+                ehrType:
+                  type: string
+                  enum:
+                  - athena
+                  - ecw
+                  - practice-fusion
+                ehrUrl:
+                  type: string
+                  format: uri
+                  description: The unique URL of the EHR system used by the organization; For organizations using the `athena` EHR, the url must be a valid Athena url
+                tins:
+                  type: array
+                  format: TIN
+                  items:
+                    type: string
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                    firstName:
+                      type: string
+                    lastName:
+                      type: string
+                    ehrUserName:
+                      type: string
+                  required:
+                  - email
+                  - firstName
+                  - lastName
+                  - ehrUserName
+              required:
+              - name
+              - ehrType
+              - ehrUrl
+              - user
+      required:
+      - invitationContexts
+      - setupData
+  securitySchemes:
+    Access_token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use this token in the Authorization header when calling any authenticated resource request

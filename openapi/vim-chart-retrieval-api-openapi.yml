@@ -1,0 +1,109 @@
+openapi: 3.2.0
+info:
+  title: Vim REST Chart Retrieval API
+  version: 1.0.0
+  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
+
+    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
+
+    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
+
+
+    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
+
+
+    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+servers:
+- url: https://api.getvim.com/v1
+tags:
+- name: Chart Retrieval
+paths:
+  /chart-retrieval/download-url/{requestId}:
+    get:
+      parameters:
+      - name: requestId
+        in: path
+        description: The Vim unique identifier for the request.
+        required: true
+        schema:
+          type: string
+        example: a1b2c3d4e5f6a7b8c9d0
+      operationId: getChartRetrievalDownloadURL
+      security:
+      - Access token: []
+      tags:
+      - Chart Retrieval
+      summary: Get download URL for chart retrieval request
+      description: "Retrieves a presigned URL to download the chart data for a specific request ID.\nFor authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.\n<b>ZIP File Structure:</b>\nThe downloaded file will be a password-protected ZIP archive with the following structure:\n- requestId.zip\n  - requestId.pdf\n  - requestId.json\n\n<b>ZIP Password:</b>\nThe ZIP file is password-protected using your applicationId as the password.\n<b>Rate limit:</b> You can send up to 50 requests per minute.<p>Vim allows developers to test the API without accessing live data.\nBy using <code>requestId = a1b2c3d4e5f6a7b8c9d0</code> in the API parameter, developers receive a password protected predefined ZIP file response that simulates real chart retrieval data but with de-identified data. \nZip's password is the <code>demo-app-id</code>. \nPlease note that you have to be authorized to use the service.</p>"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileDownloadURL:
+                    type: string
+                    description: The presigned URL to download the chart data
+                    format: uri
+                    example: https://storage.example.com/charts/request123?signature=abc123
+                required:
+                - fileDownloadURL
+        '400':
+          description: 'Bad request. Occurs when:
+
+            - The provided requestId is invalid
+
+            - The account-id is missing from the request
+
+            - The request parameters are invalid'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    enum:
+                    - 400
+                  error:
+                    type: string
+                    description: Bad Request
+                  message:
+                    type: string
+                    description: Error message indicating the specific issue
+                    examples:
+                    - Invalid request-id
+                    - Missing account-id
+                    - Invalid request parameters
+        '401':
+          description: Unauthorized. Bearer token is required.
+        '403':
+          description: Forbidden. Insufficient permissions.
+        '429':
+          description: 'Rate limit exceeded: Too many requests'
+        '500':
+          description: Internal server error. Failed to create presigned URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    enum:
+                    - 500
+                  error:
+                    type: string
+                    description: INTERNAL_SERVER_ERROR
+                  message:
+                    type: string
+                    description: Failed to create presigned url for request-id
+components:
+  securitySchemes:
+    Access_token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use this token in the Authorization header when calling any authenticated resource request

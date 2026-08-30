@@ -1,0 +1,147 @@
+openapi: 3.2.0
+info:
+  title: Vim Data Source API Integration Access Token Retrieval API
+  description: API for managing patient insights
+  version: ''
+servers:
+- url: https://{environment}-{customerName}.com
+  description: Customer API server URL
+  variables:
+    environment:
+      default: api
+      description: Environment (e.g., api, staging, dev)
+    customerName:
+      default: example
+      description: Customer name
+security:
+- bearerAuth: []
+tags:
+- name: Access Token Retrieval
+  description: Obtaining a Bearer service token to make API requests
+paths:
+  /oauth/token:
+    post:
+      operationId: post-oauth-token
+      tags:
+      - Access Token Retrieval
+      summary: Authenticate and Retrieve an Access Token
+      description: This endpoint authenticates clients and provides access tokens for subsequent API calls.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+            example:
+              client_id: example-client-id
+              client_secret: example-client-secret
+              grant_type: client_credentials
+        description: Authentication request body containing client credentials
+      security: []
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_INPUT
+                reason: The request is missing required parameters or contained invalid values
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: UNAUTHORIZED
+                reason: The provided authentication credentials are invalid
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: SERVER_ERROR
+                reason: An unexpected error occurred while processing the request
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
+    AuthTokenResponse:
+      type: object
+      required:
+      - access_token
+      - token_type
+      - expires_in
+      properties:
+        access_token:
+          type: string
+          description: Bearer token for authenticating subsequent requests
+        token_type:
+          type: string
+          default: Bearer
+          description: Type of the token issued
+        expires_in:
+          type: integer
+          default: 3600
+          description: Token expiry details in seconds
+    AuthTokenRequest:
+      type: object
+      required:
+      - client_id
+      - client_secret
+      - grant_type
+      description: Authentication request
+      properties:
+        client_id:
+          type: string
+          description: Unique defined ID for the client
+        client_secret:
+          type: string
+          description: Provided client secret information
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type, must be set to client_credentials
+          default: client_credentials
+      example:
+        client_id: example-client-id
+        client_secret: example-client-secret
+        grant_type: client_credentials
+  securitySchemes:
+    service:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: ''
+          scopes: {}
+      x-google-issuer: https://api.genairisk.dev.example.com/
+      x-google-audiences: test3,https://sage.health/,test4
+      x-google-jwks_uri: https://us-central1-clinicalnotesapp.cloudfunctions.net/getPublicCert
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer authentication token obtained from the /oauth/token endpoint
+      bearerFormat: JWT
