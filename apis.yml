@@ -130,6 +130,8 @@ apis:
   humanURL: https://docs.getvim.com/vim-os-js/setting-up
   baseURL: https://api.getvim.com/v1
   tags:
+  - Application
+  tags_raw:
   - Applications
   properties:
   - type: OpenAPI
