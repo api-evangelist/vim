@@ -2,21 +2,18 @@ aid: vim
 url: https://raw.githubusercontent.com/api-evangelist/vim/refs/heads/main/apis.yml
 name: Vim
 kind: company
-description: >-
-  Vim is a United States healthcare technology company (getvim.com) that operates a
-  clinical workflow and point-of-care integration platform connecting health plans,
-  provider organizations, and digital-health applications to physicians inside their
-  existing electronic health records. Through the Vim Canvas developer platform and the
-  VimOS.js JavaScript SDK, applications embed actionable clinical insights - diagnosis
-  gaps, risk, quality, and social determinants of health - directly into supported
-  ambulatory EHR workflows and can read and write EHR resources (Patient, Encounter,
-  Orders, Referral, Claim) at the point of care. Vim also exposes a REST API at
-  api.getvim.com/v1 for provisioning applications, organizations, invitations,
-  appointment lookups, and chart retrieval, authenticated with OAuth 2.0 client
-  credentials via an Auth0-backed authorization server (auth.getvim.com). Vim is HIPAA,
-  SOC 2, and HITRUST certified. The platform is proprietary REST and SDK based; it is not
-  an HL7 FHIR API and publishes no FHIR CapabilityStatement. The API is available only to
-  application servers hosted within the United States.
+description: Vim is a United States healthcare technology company (getvim.com) that operates a clinical
+  workflow and point-of-care integration platform connecting health plans, provider organizations, and
+  digital-health applications to physicians inside their existing electronic health records. Through the
+  Vim Canvas developer platform and the VimOS.js JavaScript SDK, applications embed actionable clinical
+  insights - diagnosis gaps, risk, quality, and social determinants of health - directly into supported
+  ambulatory EHR workflows and can read and write EHR resources (Patient, Encounter, Orders, Referral,
+  Claim) at the point of care. Vim also exposes a REST API at api.getvim.com/v1 for provisioning applications,
+  organizations, invitations, appointment lookups, and chart retrieval, authenticated with OAuth 2.0 client
+  credentials via an Auth0-backed authorization server (auth.getvim.com). Vim is HIPAA, SOC 2, and HITRUST
+  certified. The platform is proprietary REST and SDK based; it is not an HL7 FHIR API and publishes no
+  FHIR CapabilityStatement. The API is available only to application servers hosted within the United
+  States.
 deliveryModel:
   model: saas
   open_source: false
@@ -68,14 +65,13 @@ tags_raw:
 - Care Gaps
 - OAuth
 created: '2026-07-24'
-modified: '2026-08-15'
+modified: '2026-09-16'
 specificationVersion: '0.23'
 apis:
 - aid: vim:vim-canvas-sdk
   name: Vim Canvas SDK (VimOS.js)
-  description: >-
-    The Vim Canvas developer platform and VimOS.js JavaScript SDK for embedding applications at the point
-    of care. Reads EHR state (Patient, Encounter, Orders, Referral, Claim, plus problem/medication/allergy/lab/vitals
+  description: The Vim Canvas developer platform and VimOS.js JavaScript SDK for embedding applications
+    at the point of care. Reads EHR state (Patient, Encounter, Orders, Referral, Claim, plus problem/medication/allergy/lab/vitals
     lists) and writes back to Encounter, Referral, and Order resources through Vim Connect's EHR connectivity
     layer. Proprietary SDK surface - not FHIR.
   humanURL: https://docs.getvim.com/vim-os-js/setting-up
@@ -439,12 +435,15 @@ common:
   url: capabilities/vim-capability-edges.yml
   name: Vim Business Capability Map
 - type: OpenAPI
-  url: openapi/vim-data-source-openapi-original.json
+  url: openapi/_original/vim-data-source-openapi-original.json
 - type: OpenAPI
-  url: openapi/vim-rest-api-openapi-original.json
+  url: openapi/_original/vim-rest-api-openapi-original.json
 - type: X-MCPServerCandidate
   url: mcp/vim-mcp.yml
-  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate
+    — a tool list derived from the published API contracts, not an existing server. The scorer already
+    read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type
+    surfaces with a server that does not exist.'
 - type: ToolCrosswalk
   url: mcp/vim-tool-crosswalk.yml
 - type: Packages
