@@ -17,6 +17,6 @@ actions:
   - target: $.paths['/insights/feedback'].post
     update:
       x-apievangelist-consequence: write; records clinician action (AGREE/DISMISS) on a gap/insight
-notes: >-
+x-notes: >-
   Non-destructive overlay capturing API Evangelist annotations. The original
   spec at openapi/vim-data-source-openapi-original.json is never mutated.

@@ -25,9 +25,7 @@ paths:
       tags:
       - Patient Identification
       summary: Identify an Eligible Patient
-      description: 'Identifies a patient that is eligible to the service by their personal details information.
-
-        '
+      description: Identifies a patient that is eligible to the service by their personal details information.
       requestBody:
         required: true
         content:
@@ -114,6 +112,22 @@ paths:
                 reason: An unexpected error occurred while processing the request
 components:
   schemas:
+    IdentifyPatientResponse:
+      type: object
+      required:
+      - is_eligible
+      - patient_id
+      description: Response from patient identification
+      properties:
+        is_eligible:
+          type: boolean
+          description: Indicates if the patient is eligible for the service
+        patient_id:
+          type: string
+          description: Unique identifier for the patient
+      example:
+        is_eligible: true
+        patient_id: d4fon0UkvtdfNBW1JfD5
     PatientDetails:
       type: object
       required:
@@ -171,22 +185,6 @@ components:
       example:
         code: SERVER_ERROR
         reason: An unexpected error occurred while processing the request
-    IdentifyPatientResponse:
-      type: object
-      required:
-      - is_eligible
-      - patient_id
-      description: Response from patient identification
-      properties:
-        is_eligible:
-          type: boolean
-          description: Indicates if the patient is eligible for the service
-        patient_id:
-          type: string
-          description: Unique identifier for the patient
-      example:
-        is_eligible: true
-        patient_id: d4fon0UkvtdfNBW1JfD5
   securitySchemes:
     service:
       type: oauth2

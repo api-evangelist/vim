@@ -2,17 +2,7 @@ openapi: 3.2.0
 info:
   title: Vim REST Appointments API
   version: 1.0.0
-  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
-
-    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
-
-    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
-
-
-    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
-
-
-    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+  description: The Vim REST API allows you to access various resources and services provided by Vim.
 servers:
 - url: https://api.getvim.com/v1
 tags:
@@ -52,7 +42,71 @@ paths:
 
         The endpoint returns scheduled appointments for the upcoming 10 days for Authorized Users within the customer organization which have your application installed.
 
-        For authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.<p><b>Rate limit:</b> You can send up to 50 requests per minute.<p><b>Pagination:</b> The API supports offset-based pagination to handle large datasets efficiently. The following parameters control pagination:</p><ul><li><b>offset</b> (optional): The starting point of the data to retrieve. Default is 0.</li><li><b>limit</b> (optional): The number of records to retrieve. Default is 50, with a maximum value of 50.</li></ul><p>This allows you to retrieve subsets of data in sequential requests. For example:</p><ul><li><code>offset=0&limit=50</code> retrieves the first 50 records.</li><li><code>offset=50&limit=50</code> retrieves the next 50 records.</li></ul></p><p>Vim allows developers to test the API without accessing live data. By using <code>vimOrganizationId = 123456789</code> in the API parameter, developers receive a predefined JSON response that simulates real appointment data but with de-identified data. Please note that you have to be authorized to use the service.</p><h3>How This API Works</h3><p>This API is <b>not</b> a real-time backend-to-backend EHR integration. It is a <b>daily snapshot</b> system — Vim syncs appointment data from the EHR once per day, and this endpoint serves that latest snapshot.</p><p><b>Daily sync flow:</b></p><ol><li>Once per day, Vim syncs appointments from the EHR for each provider with an NPI, covering the next 10 days.</li><li>The data is stored in Vim''s backend.</li><li>This endpoint returns that stored snapshot — it does not query the EHR in real time.</li></ol><p><b>Supported EHRs:</b> ECW, Athena, and Sandbox EHR (for testing).</p><p><b>Key constraints:</b></p><ul><li><b>Not real-time:</b> Data is synced once daily. Expect up to a 24-hour lag for new appointments.</li><li><b>NPI required:</b> Only physicians with an NPI set in the EHR are included in the sync.</li><li><b>App must be initialized:</b> The app authentication flow must be completed for that user before any data is synced for them.</li><li><b>Physician must be logged in:</b> Vim Connect must be active during the daily sync window for that provider''s data to be extracted.</li><li><b>Appointment timing matters:</b> Appointments added to the EHR after the daily sync has run won''t appear until the following day.</li><li><b>Lookahead window:</b> Only the next 10 days of appointments are available.</li></ul>'
+        For authorization, you must use the token obtained from the Obtain access token endpoint.
+
+        Rate limit: You can send up to 50 requests per minute.
+
+        Pagination: The API supports offset-based pagination to handle large datasets efficiently. The following parameters control pagination:
+
+
+        offset (optional): The starting point of the data to retrieve. Default is 0.
+
+
+        limit (optional): The number of records to retrieve. Default is 50, with a maximum value of 50.
+
+
+        This allows you to retrieve subsets of data in sequential requests. For example:
+
+
+        offset=0&limit=50 retrieves the first 50 records.
+
+
+        offset=50&limit=50 retrieves the next 50 records.
+
+
+        Vim allows developers to test the API without accessing live data. By using vimOrganizationId = 123456789 in the API parameter, developers receive a predefined JSON response that simulates real appointment data but with de-identified data. Please note that you have to be authorized to use the service.
+
+
+        How This API Works
+
+
+        This API is not a real-time backend-to-backend EHR integration. It is a daily snapshot system — Vim syncs appointment data from the EHR once per day, and this endpoint serves that latest snapshot.
+
+
+        Daily sync flow:
+
+
+        Once per day, Vim syncs appointments from the EHR for each provider with an NPI, covering the next 10 days.
+
+
+        The data is stored in Vim''s backend.
+
+
+        This endpoint returns that stored snapshot — it does not query the EHR in real time.
+
+
+        Supported EHRs: ECW, Athena, and Sandbox EHR (for testing).
+
+
+        Key constraints:
+
+
+        Not real-time: Data is synced once daily. Expect up to a 24-hour lag for new appointments.
+
+
+        NPI required: Only physicians with an NPI set in the EHR are included in the sync.
+
+
+        App must be initialized: The app authentication flow must be completed for that user before any data is synced for them.
+
+
+        Physician must be logged in: Vim Connect must be active during the daily sync window for that provider''s data to be extracted.
+
+
+        Appointment timing matters: Appointments added to the EHR after the daily sync has run won''t appear until the following day.
+
+
+        Lookahead window: Only the next 10 days of appointments are available.'
       responses:
         '201':
           description: Successful response

@@ -1,0 +1,45 @@
+{
+  "provider": "vim",
+  "sources": [
+    "_original/vim-data-source-openapi-original.json",
+    "_original/vim-rest-api-openapi-original.json"
+  ],
+  "outputs": [
+    "vim-access-token-retrieval-api-openapi.yml",
+    "vim-get-patient-care-insights-api-openapi.yml",
+    "vim-patient-care-insights-feedback-api-openapi.yml",
+    "vim-patient-identification-api-openapi.yml",
+    "vim-applications-api-openapi.yml",
+    "vim-appointments-api-openapi.yml",
+    "vim-authentication-api-openapi.yml",
+    "vim-chart-retrieval-api-openapi.yml",
+    "vim-invitations-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [
+    "vim-data-source-openapi-original.json: info.version missing"
+  ],
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "vim-data-source-openapi-original.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "vim-rest-api-openapi-original.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0; renamed 1 component key(s) illegal in 3.x (e.g. Access token)",
+    "vim-rest-api-openapi-original.json: declared missing tag: Applications",
+    "vim-rest-api-openapi-original.json: declared missing tag: Appointments",
+    "vim-rest-api-openapi-original.json: declared missing tag: Authentication",
+    "vim-rest-api-openapi-original.json: declared missing tag: Chart Retrieval",
+    "vim-rest-api-openapi-original.json: declared missing tag: Invitations",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "vim-access-token-retrieval-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-applications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-appointments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-chart-retrieval-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-get-patient-care-insights-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-invitations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-patient-care-insights-feedback-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "vim-patient-identification-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

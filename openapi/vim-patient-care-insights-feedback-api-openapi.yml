@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Vim Data Source API Integration Patient Care Insights Feedback API
+  title: Vim Data Source API Integration Patient Care Insights…
   description: API for managing patient insights
   version: ''
 servers:
@@ -163,74 +163,6 @@ paths:
                 reason: An unexpected error occurred while processing the request
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      required:
-      - code
-      - reason
-      properties:
-        code:
-          type: string
-          description: Error code indicating the type of error
-        reason:
-          type: string
-          description: Detailed explanation of the error
-      example:
-        code: SERVER_ERROR
-        reason: An unexpected error occurred while processing the request
-    DiagnosisGapFeedback:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/FeedbackRequest'
-      - type: object
-        required:
-        - data_type
-        properties:
-          data_type:
-            type: string
-            enum:
-            - diagnosis_gap
-            description: Type of gaps data - diagnosis_gap
-          system:
-            type: string
-            description: The main gap system as displayed in the application.
-            enum:
-            - ICD
-            - HCC
-          code:
-            type: string
-            description: The original code provided by the customer, which corresponds to the selected code(s) by the user.
-          description:
-            type: string
-            description: The description of the gap selected by the user.
-          type:
-            type: string
-            description: Indication for a previously known diagnosis or a suspected diagnosis.
-            enum:
-            - KNOWN
-            - SUSPECTED
-          medical_codes:
-            type: array
-            items:
-              type: object
-              required:
-              - system
-              - code
-              properties:
-                system:
-                  type: string
-                  enum:
-                  - CPT
-                  - ICD
-                  default: ICD
-                  description: '[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided'
-                code:
-                  type: string
-                  description: '[CONDITIONAL] - The medical code - Required when system is provided'
-                description:
-                  type: string
-                  description: Description corresponding to the medical code
-            description: The medical code(s) selected by the user with their descriptions.
     InsightFeedback:
       type: object
       allOf:
@@ -396,6 +328,59 @@ components:
               type: string
               format: date
               description: The encounter date in yyyy-mm-dd format, using the practice's timezone
+    DiagnosisGapFeedback:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/FeedbackRequest'
+      - type: object
+        required:
+        - data_type
+        properties:
+          data_type:
+            type: string
+            enum:
+            - diagnosis_gap
+            description: Type of gaps data - diagnosis_gap
+          system:
+            type: string
+            description: The main gap system as displayed in the application.
+            enum:
+            - ICD
+            - HCC
+          code:
+            type: string
+            description: The original code provided by the customer, which corresponds to the selected code(s) by the user.
+          description:
+            type: string
+            description: The description of the gap selected by the user.
+          type:
+            type: string
+            description: Indication for a previously known diagnosis or a suspected diagnosis.
+            enum:
+            - KNOWN
+            - SUSPECTED
+          medical_codes:
+            type: array
+            items:
+              type: object
+              required:
+              - system
+              - code
+              properties:
+                system:
+                  type: string
+                  enum:
+                  - CPT
+                  - ICD
+                  default: ICD
+                  description: '[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided'
+                code:
+                  type: string
+                  description: '[CONDITIONAL] - The medical code - Required when system is provided'
+                description:
+                  type: string
+                  description: Description corresponding to the medical code
+            description: The medical code(s) selected by the user with their descriptions.
     FeedbackResponse:
       type: object
       required:
@@ -407,6 +392,21 @@ components:
           description: Status of the feedback update
       example:
         update_status: SUCCESS
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
   securitySchemes:
     service:
       type: oauth2

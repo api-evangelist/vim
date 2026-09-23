@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Vim Data Source API Integration Get Patient Care Insights API
+  title: Vim Data Source API Integration Get Patient Care Insights…
   description: API for managing patient insights
   version: ''
 servers:
@@ -24,7 +24,7 @@ paths:
       operationId: post-insights-fetch
       tags:
       - Get Patient Care Insights
-      summary: 'Fetching Patient Care Insights '
+      summary: Fetching Patient Care Insights
       description: Retrieving patient care insights for the patient identified in the previous step
       requestBody:
         required: true
@@ -204,17 +204,6 @@ paths:
                 reason: An unexpected error occurred while processing the request
 components:
   schemas:
-    Patient:
-      type: object
-      required:
-      - patient_id
-      description: Patient identifier
-      properties:
-        patient_id:
-          type: string
-          description: Unique patient identifier
-      example:
-        patient_id: d4fon0UkvtdfNBW1JfD5
     ErrorResponse:
       type: object
       required:
@@ -554,6 +543,17 @@ components:
               - 1.2095
               - 0.8356
               - 1.2095
+    Patient:
+      type: object
+      required:
+      - patient_id
+      description: Patient identifier
+      properties:
+        patient_id:
+          type: string
+          description: Unique patient identifier
+      example:
+        patient_id: d4fon0UkvtdfNBW1JfD5
   securitySchemes:
     service:
       type: oauth2

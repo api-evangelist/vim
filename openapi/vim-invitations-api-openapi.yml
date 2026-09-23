@@ -2,17 +2,7 @@ openapi: 3.2.0
 info:
   title: Vim REST Invitations API
   version: 1.0.0
-  description: 'The Vim REST API allows you to access various resources and services provided by Vim.
-
-    The API is based on the OAuth 2.0 protocol and uses the client credentials grant type for authentication.
-
-    Before calling any authenticated resource request, you must obtain an access token by calling the [Obtain access token](#post-token-obtain-an-access-token) endpoint.
-
-
-    **Note**: The Vim API is only available for USA server-based instances. This means your application server must be hosted within the United States to access Vim''s EHR connectivity features. If you are a developer accessing from outside of the US, you need to use a VPN to connect, but your app server must still be in the US for production use.
-
-
-    These docs are interactive, so you can change the request parameters and see the response in real-time. Try it out!'
+  description: The Vim REST API allows you to access various resources and services provided by Vim.
 servers:
 - url: https://api.getvim.com/v1
 tags:
@@ -31,11 +21,11 @@ paths:
 
         The API returns an invitation URL that can be shared with the user for login and activation.
 
-        For authorization, you must use the token obtained from the [Obtain access token](#post-oauth-token) endpoint.
+        For authorization, you must use the token obtained from the Obtain access token endpoint.
 
-        For simplifying the testing of our API, you can import our <a download="vim-invitations-postman-collection.json" href="/invitations-postman-collection.json">invitations postman collection</a> into your <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener noreferrer">Postman installation</a>.
+        For simplifying the testing of our API, you can import our invitations postman collection into your Postman installation.
 
-        <b>Rate limit:</b> You can send up to 10 requests per minute.'
+        Rate limit: You can send up to 10 requests per minute.'
       requestBody:
         required: true
         content:
@@ -123,6 +113,8 @@ paths:
                     description: detailed error message
         '429':
           description: Too many requests; You have exceeded the rate limit
+      operationId: postInvitations
+      x-operation-id-source: derived
 components:
   schemas:
     CreateInvitationDto:

@@ -75,7 +75,7 @@ actions:
         VimOS.js encounter.putChartRetrievalRequest(); completion arrives on the
         consumer's webhook - see asyncapi/vim-webhooks.yml
       x-apievangelist-sandbox-id: requestId=a1b2c3d4e5f6a7b8c9d0 (ZIP password demo-app-id)
-notes: >-
+x-notes: >-
   Non-destructive overlay capturing API Evangelist annotations. The original
   spec at openapi/vim-rest-api-openapi-original.json is never mutated. Two of
   the six operations ship without an operationId in the provider's own
