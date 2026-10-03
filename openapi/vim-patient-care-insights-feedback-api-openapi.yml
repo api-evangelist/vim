@@ -178,6 +178,146 @@ components:
       example:
         code: SERVER_ERROR
         reason: An unexpected error occurred while processing the request
+    InsightFeedback:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/FeedbackRequest'
+      - type: object
+        required:
+        - data_type
+        properties:
+          data_type:
+            type: string
+            enum:
+            - insight
+            description: Type of data - insight
+          id:
+            type: string
+            description: A unique identifier per insight and per patient
+          title:
+            type: string
+            description: The name of the insight as it will be displayed in the application
+          code:
+            type: string
+            description: The insight code to present in the application next to the title
+          category:
+            type: string
+            description: The category of the insight (RISK/ QUALITY/ RX/ SDOH/ CCM/ UTILIZATION/ ADT/ CLINICAL INSIGHTS)
+            enum:
+            - RISK
+            - QUALITY
+            - RX
+            - SDOH
+            - CCM
+            - UTILIZATION
+            - ADT
+            - CLINICAL INSIGHTS
+          description:
+            type: string
+            description: Free-text explanation about the insight
+          type:
+            type: string
+            description: The type or program affiliation (e.g., HEDIS, ACO, STAR)
+          medical_codes:
+            type: array
+            items:
+              type: object
+              properties:
+                system:
+                  type: string
+                  enum:
+                  - CPT
+                  - ICD
+                  description: The system of the medical code (CPT/ ICD)
+                code:
+                  type: string
+                  description: The medical code
+                description:
+                  type: string
+                  description: Description corresponding to the medical code
+            description: Array of medical codes associated with the insight - each object contains a medical code, its system, and description.
+          status:
+            type: string
+            description: The status of the insight. An option to filter closed insights
+            enum:
+            - OPEN
+            - CLOSED
+          source:
+            type: string
+            description: The source of the insight
+          last_recorded:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+                description: Most recent date of a relevant service in yyyy-mm-dd format
+              provider:
+                type: object
+                properties:
+                  npi:
+                    type: string
+                    description: NPI of the most recent provider
+                  name:
+                    type: string
+                    description: Name of the most recent provider
+            description: Information about when and by whom the insight was last recorded
+          notes:
+            type: string
+            description: Additional information related to the insight
+    DiagnosisGapFeedback:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/FeedbackRequest'
+      - type: object
+        required:
+        - data_type
+        properties:
+          data_type:
+            type: string
+            enum:
+            - diagnosis_gap
+            description: Type of gaps data - diagnosis_gap
+          system:
+            type: string
+            description: The main gap system as displayed in the application.
+            enum:
+            - ICD
+            - HCC
+          code:
+            type: string
+            description: The original code provided by the customer, which corresponds to the selected code(s) by the user.
+          description:
+            type: string
+            description: The description of the gap selected by the user.
+          type:
+            type: string
+            description: Indication for a previously known diagnosis or a suspected diagnosis.
+            enum:
+            - KNOWN
+            - SUSPECTED
+          medical_codes:
+            type: array
+            items:
+              type: object
+              required:
+              - system
+              - code
+              properties:
+                system:
+                  type: string
+                  enum:
+                  - CPT
+                  - ICD
+                  default: ICD
+                  description: '[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided'
+                code:
+                  type: string
+                  description: '[CONDITIONAL] - The medical code - Required when system is provided'
+                description:
+                  type: string
+                  description: Description corresponding to the medical code
+            description: The medical code(s) selected by the user with their descriptions.
     FeedbackResponse:
       type: object
       required:
@@ -267,146 +407,6 @@ components:
               type: string
               format: date
               description: The encounter date in yyyy-mm-dd format, using the practice's timezone
-    DiagnosisGapFeedback:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/FeedbackRequest'
-      - type: object
-        required:
-        - data_type
-        properties:
-          data_type:
-            type: string
-            enum:
-            - diagnosis_gap
-            description: Type of gaps data - diagnosis_gap
-          system:
-            type: string
-            description: The main gap system as displayed in the application.
-            enum:
-            - ICD
-            - HCC
-          code:
-            type: string
-            description: The original code provided by the customer, which corresponds to the selected code(s) by the user.
-          description:
-            type: string
-            description: The description of the gap selected by the user.
-          type:
-            type: string
-            description: Indication for a previously known diagnosis or a suspected diagnosis.
-            enum:
-            - KNOWN
-            - SUSPECTED
-          medical_codes:
-            type: array
-            items:
-              type: object
-              required:
-              - system
-              - code
-              properties:
-                system:
-                  type: string
-                  enum:
-                  - CPT
-                  - ICD
-                  default: ICD
-                  description: '[CONDITIONAL] - The system of the medical code (ICD/ CPT) - Required when code is provided'
-                code:
-                  type: string
-                  description: '[CONDITIONAL] - The medical code - Required when system is provided'
-                description:
-                  type: string
-                  description: Description corresponding to the medical code
-            description: The medical code(s) selected by the user with their descriptions.
-    InsightFeedback:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/FeedbackRequest'
-      - type: object
-        required:
-        - data_type
-        properties:
-          data_type:
-            type: string
-            enum:
-            - insight
-            description: Type of data - insight
-          id:
-            type: string
-            description: A unique identifier per insight and per patient
-          title:
-            type: string
-            description: The name of the insight as it will be displayed in the application
-          code:
-            type: string
-            description: The insight code to present in the application next to the title
-          category:
-            type: string
-            description: The category of the insight (RISK/ QUALITY/ RX/ SDOH/ CCM/ UTILIZATION/ ADT/ CLINICAL INSIGHTS)
-            enum:
-            - RISK
-            - QUALITY
-            - RX
-            - SDOH
-            - CCM
-            - UTILIZATION
-            - ADT
-            - CLINICAL INSIGHTS
-          description:
-            type: string
-            description: Free-text explanation about the insight
-          type:
-            type: string
-            description: The type or program affiliation (e.g., HEDIS, ACO, STAR)
-          medical_codes:
-            type: array
-            items:
-              type: object
-              properties:
-                system:
-                  type: string
-                  enum:
-                  - CPT
-                  - ICD
-                  description: The system of the medical code (CPT/ ICD)
-                code:
-                  type: string
-                  description: The medical code
-                description:
-                  type: string
-                  description: Description corresponding to the medical code
-            description: Array of medical codes associated with the insight - each object contains a medical code, its system, and description.
-          status:
-            type: string
-            description: The status of the insight. An option to filter closed insights
-            enum:
-            - OPEN
-            - CLOSED
-          source:
-            type: string
-            description: The source of the insight
-          last_recorded:
-            type: object
-            properties:
-              date:
-                type: string
-                format: date
-                description: Most recent date of a relevant service in yyyy-mm-dd format
-              provider:
-                type: object
-                properties:
-                  npi:
-                    type: string
-                    description: NPI of the most recent provider
-                  name:
-                    type: string
-                    description: Name of the most recent provider
-            description: Information about when and by whom the insight was last recorded
-          notes:
-            type: string
-            description: Additional information related to the insight
   securitySchemes:
     service:
       type: oauth2
