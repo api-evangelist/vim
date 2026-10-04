@@ -163,21 +163,6 @@ paths:
                 reason: An unexpected error occurred while processing the request
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      required:
-      - code
-      - reason
-      properties:
-        code:
-          type: string
-          description: Error code indicating the type of error
-        reason:
-          type: string
-          description: Detailed explanation of the error
-      example:
-        code: SERVER_ERROR
-        reason: An unexpected error occurred while processing the request
     InsightFeedback:
       type: object
       allOf:
@@ -318,17 +303,6 @@ components:
                   type: string
                   description: Description corresponding to the medical code
             description: The medical code(s) selected by the user with their descriptions.
-    FeedbackResponse:
-      type: object
-      required:
-      - update_status
-      properties:
-        update_status:
-          type: string
-          default: SUCCESS
-          description: Status of the feedback update
-      example:
-        update_status: SUCCESS
     FeedbackRequest:
       type: object
       required:
@@ -407,6 +381,32 @@ components:
               type: string
               format: date
               description: The encounter date in yyyy-mm-dd format, using the practice's timezone
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
+    FeedbackResponse:
+      type: object
+      required:
+      - update_status
+      properties:
+        update_status:
+          type: string
+          default: SUCCESS
+          description: Status of the feedback update
+      example:
+        update_status: SUCCESS
   securitySchemes:
     service:
       type: oauth2
