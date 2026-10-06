@@ -65,7 +65,7 @@ tags_raw:
 - Care Gaps
 - OAuth
 created: '2026-07-24'
-modified: '2026-09-16'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 apis:
 - aid: vim:vim-canvas-sdk
@@ -431,6 +431,8 @@ apis:
   - type: DataModel
     url: data-model/vim-data-model.yml
 common:
+- url: https://getvim.com/feed/
+  type: BlogRSS
 - type: CapabilityMap
   url: capabilities/vim-capability-edges.yml
   name: Vim Business Capability Map
