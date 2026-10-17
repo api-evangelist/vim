@@ -163,6 +163,99 @@ paths:
                 reason: An unexpected error occurred while processing the request
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - reason
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        reason:
+          type: string
+          description: Detailed explanation of the error
+      example:
+        code: SERVER_ERROR
+        reason: An unexpected error occurred while processing the request
+    FeedbackRequest:
+      type: object
+      required:
+      - data_type
+      - patient_id
+      - id
+      - action
+      - organization
+      description: Base feedback request with common fields
+      properties:
+        data_type:
+          type: string
+          description: Type of gaps data - diagnosis_gap or insight
+          enum:
+          - diagnosis_gap
+          - insight
+        patient_id:
+          type: string
+          description: The unique ID of the patient
+        id:
+          type: string
+          description: The unique ID of the gap selected by the user
+        action:
+          type: object
+          required:
+          - date
+          - type
+          properties:
+            date:
+              type: string
+              format: date
+              description: The date when the action was taken in yyyy-mm-dd format, using the practice's timezone
+            type:
+              type: string
+              description: 'The reason of the reported action. Examples: AGREE, DISMISS'
+            reason:
+              type: string
+              description: The reason of the reported action.
+            notes:
+              type: string
+              description: The free text added by the user for the reported action.
+        organization:
+          type: object
+          required:
+          - name
+          - vim_organization_key
+          properties:
+            name:
+              type: string
+              description: The organization name associated with the user.
+            vim_organization_key:
+              type: string
+              description: The unique organization ID as available in the Vim system.
+        user:
+          type: object
+          properties:
+            first_name:
+              type: string
+              description: The user's first name.
+            last_name:
+              type: string
+              description: The user's last name.
+            npi:
+              type: string
+              description: The user's National Provider Identifier (NPI) (10 digits).
+            ehr_username:
+              type: string
+              description: The user's EHR username.
+        encounter:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The EHR encounter ID.
+            date:
+              type: string
+              format: date
+              description: The encounter date in yyyy-mm-dd format, using the practice's timezone
     InsightFeedback:
       type: object
       allOf:
@@ -303,99 +396,6 @@ components:
                   type: string
                   description: Description corresponding to the medical code
             description: The medical code(s) selected by the user with their descriptions.
-    FeedbackRequest:
-      type: object
-      required:
-      - data_type
-      - patient_id
-      - id
-      - action
-      - organization
-      description: Base feedback request with common fields
-      properties:
-        data_type:
-          type: string
-          description: Type of gaps data - diagnosis_gap or insight
-          enum:
-          - diagnosis_gap
-          - insight
-        patient_id:
-          type: string
-          description: The unique ID of the patient
-        id:
-          type: string
-          description: The unique ID of the gap selected by the user
-        action:
-          type: object
-          required:
-          - date
-          - type
-          properties:
-            date:
-              type: string
-              format: date
-              description: The date when the action was taken in yyyy-mm-dd format, using the practice's timezone
-            type:
-              type: string
-              description: 'The reason of the reported action. Examples: AGREE, DISMISS'
-            reason:
-              type: string
-              description: The reason of the reported action.
-            notes:
-              type: string
-              description: The free text added by the user for the reported action.
-        organization:
-          type: object
-          required:
-          - name
-          - vim_organization_key
-          properties:
-            name:
-              type: string
-              description: The organization name associated with the user.
-            vim_organization_key:
-              type: string
-              description: The unique organization ID as available in the Vim system.
-        user:
-          type: object
-          properties:
-            first_name:
-              type: string
-              description: The user's first name.
-            last_name:
-              type: string
-              description: The user's last name.
-            npi:
-              type: string
-              description: The user's National Provider Identifier (NPI) (10 digits).
-            ehr_username:
-              type: string
-              description: The user's EHR username.
-        encounter:
-          type: object
-          properties:
-            id:
-              type: string
-              description: The EHR encounter ID.
-            date:
-              type: string
-              format: date
-              description: The encounter date in yyyy-mm-dd format, using the practice's timezone
-    ErrorResponse:
-      type: object
-      required:
-      - code
-      - reason
-      properties:
-        code:
-          type: string
-          description: Error code indicating the type of error
-        reason:
-          type: string
-          description: Detailed explanation of the error
-      example:
-        code: SERVER_ERROR
-        reason: An unexpected error occurred while processing the request
     FeedbackResponse:
       type: object
       required:

@@ -90,24 +90,6 @@ components:
       example:
         code: SERVER_ERROR
         reason: An unexpected error occurred while processing the request
-    AuthTokenResponse:
-      type: object
-      required:
-      - access_token
-      - token_type
-      - expires_in
-      properties:
-        access_token:
-          type: string
-          description: Bearer token for authenticating subsequent requests
-        token_type:
-          type: string
-          default: Bearer
-          description: Type of the token issued
-        expires_in:
-          type: integer
-          default: 3600
-          description: Token expiry details in seconds
     AuthTokenRequest:
       type: object
       required:
@@ -130,6 +112,24 @@ components:
         client_id: example-client-id
         client_secret: example-client-secret
         grant_type: client_credentials
+    AuthTokenResponse:
+      type: object
+      required:
+      - access_token
+      - token_type
+      - expires_in
+      properties:
+        access_token:
+          type: string
+          description: Bearer token for authenticating subsequent requests
+        token_type:
+          type: string
+          default: Bearer
+          description: Type of the token issued
+        expires_in:
+          type: integer
+          default: 3600
+          description: Token expiry details in seconds
   securitySchemes:
     service:
       type: oauth2
