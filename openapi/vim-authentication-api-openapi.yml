@@ -66,3 +66,9 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: Use this token in the Authorization header when calling any authenticated resource request
+x-provenance:
+  method: harvested
+  publisher: Vim
+  source: https://data-docs.getvim.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

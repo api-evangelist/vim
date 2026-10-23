@@ -422,3 +422,9 @@ components:
       scheme: bearer
       description: Bearer authentication token obtained from the /oauth/token endpoint
       bearerFormat: JWT
+x-provenance:
+  method: harvested
+  publisher: Vim
+  source: https://data-docs.getvim.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
